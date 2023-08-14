@@ -31,6 +31,7 @@ vim.g.mapleader = ' '
 
 -- edit config
 vim.keymap.set({'n', 'x', 'o'}, '<leader>u', ':e $MYVIMRC<cr>', { desc = 'Edit Nvim Config'})
+vim.keymap.set({'n', 'x', 'o'}, '<leader>U', ':source $MYVIMRC<cr>', { desc = 'Source Nvim Config'})
 
 -- Shortcuts
 vim.keymap.set({'n', 'x', 'o'}, '<leader>h', '^', { desc = 'Goto Current Line Left'})
@@ -664,3 +665,16 @@ require('nvim-treesitter.configs').setup({
     'python',
   },
 })
+
+local wk = require("which-key")
+wk.register({
+  b = {
+    name = "buffers",
+  },
+	c = {
+		name = "close",
+	},
+	f = {
+		name = "telescope find"
+	}
+}, { prefix = "<leader>" })
