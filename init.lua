@@ -30,26 +30,26 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 
 -- edit config
-vim.keymap.set({'n', 'x', 'o'}, '<leader>u', ':e $MYVIMRC<cr>', { desc = 'Edit Nvim Config'})
-vim.keymap.set({'n', 'x', 'o'}, '<leader>U', ':source $MYVIMRC<cr>', { desc = 'Source Nvim Config'})
+vim.keymap.set({ 'n', 'x', 'o' }, '<leader>u', ':e $MYVIMRC<cr>', { desc = 'Edit Nvim Config' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<leader>U', ':source $MYVIMRC<cr>', { desc = 'Source Nvim Config' })
 
 -- Shortcuts
-vim.keymap.set({'n', 'x', 'o'}, '<leader>h', '^', { desc = 'Goto Current Line Left'})
-vim.keymap.set({'n', 'x', 'o'}, '<leader>l', 'g_', { desc = 'Goto Current Line Right'})
-vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All'})
+vim.keymap.set({ 'n', 'x', 'o' }, '<leader>h', '^', { desc = 'Goto Current Line Left' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<leader>l', 'g_', { desc = 'Goto Current Line Right' })
+vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' })
 
 -- Basic clipboard interaction
-vim.keymap.set({'n', 'x'}, 'gy', '"+y', { desc = 'Copy to System'}) -- copy
-vim.keymap.set({'n', 'x'}, 'gp', '"+p', { desc = 'Paste from System'}) -- paste
+vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- copy
+vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from System' }) -- paste
 
 -- Delete text
-vim.keymap.set({'n', 'x'}, 'x', '"_x')
+vim.keymap.set({ 'n', 'x' }, 'x', '"_x')
 
 -- Commands
-vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write File'})
-vim.keymap.set('n', '<leader>bq', '<cmd>bdelete<cr>', { desc = 'Delete Buffer'})
-vim.keymap.set('n', '<leader>bl', '<cmd>buffer #<cr>', { desc = 'Goto Last Buffer'})
-vim.keymap.set('n', '<leader><space>', '<cmd>buffers<cr>:buffer<Space>', { desc = 'Goto Buffer:'})
+vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write File' })
+vim.keymap.set('n', '<leader>bq', '<cmd>bdelete<cr>', { desc = 'Delete Buffer' })
+vim.keymap.set('n', '<leader>bl', '<cmd>buffer #<cr>', { desc = 'Goto Last Buffer' })
+vim.keymap.set('n', '<leader><space>', '<cmd>buffers<cr>:buffer<Space>', { desc = 'Goto Buffer:' })
 -- vim.keymap.set('n', '<leader>e', '<cmd>Lexplore %:p:h<cr>') -- use nvim tree
 -- vim.keymap.set('n', '<leader>E', '<cmd>Lexplore<cr>') -- use nvim-tree
 
@@ -87,20 +87,20 @@ end
 
 vim.api.nvim_create_user_command('ReloadConfig', 'source $MYVIMRC', {})
 
-local group = vim.api.nvim_create_augroup('user_cmds', {clear = true})
+local group = vim.api.nvim_create_augroup('user_cmds', { clear = true })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
-  group = group,
-  desc = 'Highlight on yank',
-  callback = function()
-    vim.highlight.on_yank({higroup = 'Visual', timeout = 200})
-  end,
+	group = group,
+	desc = 'Highlight on yank',
+	callback = function()
+		vim.highlight.on_yank({ higroup = 'Visual', timeout = 200 })
+	end,
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = {'help', 'man'},
-  group = group,
-  command = 'nnoremap <buffer> q <cmd>quit<cr>'
+	pattern = { 'help', 'man' },
+	group = group,
+	command = 'nnoremap <buffer> q <cmd>quit<cr>'
 })
 
 --[[
@@ -118,91 +118,91 @@ vim.api.nvim_create_autocmd('FileType', {
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  print('Installing lazy.nvim')
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+	print('Installing lazy.nvim')
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
 
 require("lazy").setup({
-  -- file explorer tree
-  {"nvim-tree/nvim-tree.lua"},
-  {"nvim-tree/nvim-web-devicons"},
-  
-  -- fuzz finder
-  { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-  {'GustavoKatel/telescope-asynctasks.nvim'},
+	-- file explorer tree
+	{ "nvim-tree/nvim-tree.lua" },
+	{ "nvim-tree/nvim-web-devicons" },
 
-  -- terminal
-  {'akinsho/toggleterm.nvim'},
+	-- fuzz finder
+	{ 'nvim-telescope/telescope.nvim',            branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+	{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+	{ 'GustavoKatel/telescope-asynctasks.nvim' },
 
-  -- surround
-  {'kylechui/nvim-surround'},
+	-- terminal
+	{ 'akinsho/toggleterm.nvim' },
 
-  -- Git
-  {'lewis6991/gitsigns.nvim'},
-  {'tpope/vim-fugitive'},
+	-- surround
+	{ 'kylechui/nvim-surround' },
 
-  -- Comment
-  {'numToStr/Comment.nvim'},
+	-- Git
+	{ 'lewis6991/gitsigns.nvim' },
+	{ 'tpope/vim-fugitive' },
 
-  -- buffer close
-  {'moll/vim-bbye'},
+	-- Comment
+	{ 'numToStr/Comment.nvim' },
 
-  -- which key advice
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-    end,
-  },
+	-- buffer close
+	{ 'moll/vim-bbye' },
 
-  -- theme
-  { "folke/tokyonight.nvim", priority = 1000},
-  { "ellisonleao/gruvbox.nvim", priority = 1000 },
+	-- which key advice
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		init = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 300
+		end,
+	},
 
-  -- indent blank visual
-  {'lukas-reineke/indent-blankline.nvim'},
+	-- theme
+	{ "folke/tokyonight.nvim",                      priority = 1000 },
+	{ "ellisonleao/gruvbox.nvim",                   priority = 1000 },
 
-  -- below status line
-  {'nvim-lualine/lualine.nvim'},
+	-- indent blank visual
+	{ 'lukas-reineke/indent-blankline.nvim' },
 
-  -- top status line
-  {'akinsho/bufferline.nvim'},
+	-- below status line
+	{ 'nvim-lualine/lualine.nvim' },
 
-  -- LSP support
-  {'neovim/nvim-lspconfig'},
-  {'williamboman/mason.nvim'},
-  {'williamboman/mason-lspconfig.nvim'},
-  
-  -- Autocomplete
-  {'hrsh7th/nvim-cmp'},
-  {'hrsh7th/cmp-buffer'},
-  {'hrsh7th/cmp-path'},
-  {'saadparwaiz1/cmp_luasnip'},
-  {'hrsh7th/cmp-nvim-lsp'},
-  
-  -- Snippets
-  {'L3MON4D3/LuaSnip'},
-  {'rafamadriz/friendly-snippets'},
+	-- top status line
+	{ 'akinsho/bufferline.nvim' },
 
-  -- asynctasks
-  {'skywind3000/asynctasks.vim'},
-  {'skywind3000/asyncrun.vim'},
+	-- LSP support
+	{ 'neovim/nvim-lspconfig' },
+	{ 'williamboman/mason.nvim' },
+	{ 'williamboman/mason-lspconfig.nvim' },
 
-  -- treesitter
-  {'nvim-treesitter/nvim-treesitter'},
-  {'nvim-treesitter/nvim-treesitter-textobjects'},
+	-- Autocomplete
+	{ 'hrsh7th/nvim-cmp' },
+	{ 'hrsh7th/cmp-buffer' },
+	{ 'hrsh7th/cmp-path' },
+	{ 'saadparwaiz1/cmp_luasnip' },
+	{ 'hrsh7th/cmp-nvim-lsp' },
+
+	-- Snippets
+	{ 'L3MON4D3/LuaSnip' },
+	{ 'rafamadriz/friendly-snippets' },
+
+	-- asynctasks
+	{ 'skywind3000/asynctasks.vim' },
+	{ 'skywind3000/asyncrun.vim' },
+
+	-- treesitter
+	{ 'nvim-treesitter/nvim-treesitter' },
+	{ 'nvim-treesitter/nvim-treesitter-textobjects' },
 })
 
 -- ========================================================================== --
@@ -222,45 +222,45 @@ vim.cmd.colorscheme('tokyonight')
 ---
 -- See :help nvim-tree-setup
 require('nvim-tree').setup({
-  hijack_cursor = false,
-  on_attach = function(bufnr)
-    local bufmap = function(lhs, rhs, desc)
-      vim.keymap.set('n', lhs, rhs, {buffer = bufnr, desc = desc})
-    end
+	hijack_cursor = false,
+	on_attach = function(bufnr)
+		local bufmap = function(lhs, rhs, desc)
+			vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+		end
 
-    -- :help nvim-tree.api
-    local api = require('nvim-tree.api')
+		-- :help nvim-tree.api
+		local api = require('nvim-tree.api')
 
-    bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
-    bufmap('o', api.node.open.edit, 'Expand folder or go to file')
-    bufmap('A', api.tree.expand_all, 'Expand all')
-    bufmap('H', api.node.navigate.parent_close, 'Hidden subtree, Close parent folder')
-    bufmap('C', api.tree.change_root_to_node, 'Change root to node')
-    bufmap('y', api.fs.copy.node, 'Copy')
-    bufmap('d', api.fs.cut, 'Cut')
-    bufmap('D', api.fs.remove, 'Delete')
-    bufmap('p', api.fs.paste, 'Paste')
-    bufmap('r', api.fs.rename, 'Rename')
-    bufmap('<Tab>', api.node.open.preview, 'Open Preview')
-    bufmap('.', api.node.run.cmd, 'Run Command')
-    bufmap('O', api.node.run.system, 'Run in System')
-  end
+		bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
+		bufmap('o', api.node.open.edit, 'Expand folder or go to file')
+		bufmap('A', api.tree.expand_all, 'Expand all')
+		bufmap('H', api.node.navigate.parent_close, 'Hidden subtree, Close parent folder')
+		bufmap('C', api.tree.change_root_to_node, 'Change root to node')
+		bufmap('y', api.fs.copy.node, 'Copy')
+		bufmap('d', api.fs.cut, 'Cut')
+		bufmap('D', api.fs.remove, 'Delete')
+		bufmap('p', api.fs.paste, 'Paste')
+		bufmap('r', api.fs.rename, 'Rename')
+		bufmap('<Tab>', api.node.open.preview, 'Open Preview')
+		bufmap('.', api.node.run.cmd, 'Run Command')
+		bufmap('O', api.node.run.system, 'Run in System')
+	end
 })
 
-vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', {desc = 'Open/Close NvimTree'})
+vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Open/Close NvimTree' })
 
 
 ---
 -- Telescope
 ---
 -- See :help telescope.builtin
-vim.keymap.set('n', '<leader>?', '<cmd>Telescope oldfiles<cr>', {desc='Search Oldfiles'})
-vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', {desc='Find Buffers'})
-vim.keymap.set('n', '<leader>ff', '<cmd>Telescope find_files<cr>', {desc='Find Files'})
-vim.keymap.set('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', {desc='Find Grep'})
-vim.keymap.set('n', '<leader>fd', '<cmd>Telescope diagnostics<cr>',{desc='Find Diagnostics'})
-vim.keymap.set('n', '<leader>fs', '<cmd>Telescope current_buffer_fuzzy_find<cr>', {desc='Find in thiS buffer'})
-vim.keymap.set('n', '<leader>ft', '<cmd>Telescope asynctasks all<cr>', {desc='Find AsyncTasks'})
+vim.keymap.set('n', '<leader>fh', '<cmd>Telescope oldfiles<cr>', { desc = 'Find History Files' })
+vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', { desc = 'Find Buffers' })
+vim.keymap.set('n', '<leader>ff', '<cmd>Telescope find_files<cr>', { desc = 'Find Files' })
+vim.keymap.set('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', { desc = 'Find Grep' })
+vim.keymap.set('n', '<leader>fd', '<cmd>Telescope diagnostics<cr>', { desc = 'Find Diagnostics' })
+vim.keymap.set('n', '<leader>fc', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { desc = 'Find in Current Buffer' })
+vim.keymap.set('n', '<leader>ft', '<cmd>Telescope asynctasks all<cr>', { desc = 'Find AsyncTasks' })
 require('telescope').load_extension('fzf')
 -- require('telescope').extensions.asynctasks.all() -- open at nvim start
 
@@ -270,9 +270,9 @@ require('telescope').load_extension('fzf')
 ---
 -- See :help toggleterm-roadmap
 require('toggleterm').setup({
-  open_mapping = '<C-g>',
-  direction = 'float',
-  shade_terminals = true
+	open_mapping = '<C-g>',
+	direction = 'float',
+	shade_terminals = true
 })
 
 
@@ -283,19 +283,19 @@ require('toggleterm').setup({
 require('nvim-surround').setup({})
 
 require("nvim-surround").buffer_setup({
-  delimiters = {
-      pairs = {
-          ["c"] = { "/*", "*/" },
-          ["f"] = function()
-            return {
-                vim.fn.input({
-                    prompt = "Enter the function name: "
-                }) .. "(",
-                ")",
-            }
-          end,
-      },
-  }
+	delimiters = {
+		pairs = {
+			["c"] = { "/*", "*/" },
+			["f"] = function()
+				return {
+					vim.fn.input({
+						prompt = "Enter the function name: "
+					}) .. "(",
+					")",
+				}
+			end,
+		},
+	}
 })
 
 
@@ -304,13 +304,13 @@ require("nvim-surround").buffer_setup({
 ---
 -- See :help gitsigns-usage
 require('gitsigns').setup({
-  signs = {
-    add = {text = '▎'},
-    change = {text = '▎'},
-    delete = {text = '➤'},
-    topdelete = {text = '➤'},
-    changedelete = {text = '▎'},
-  }
+	signs = {
+		add = { text = '▎' },
+		change = { text = '▎' },
+		delete = { text = '➤' },
+		topdelete = { text = '➤' },
+		changedelete = { text = '▎' },
+	}
 })
 
 
@@ -323,7 +323,7 @@ require('Comment').setup({})
 ---
 -- vim-bbye
 ---
-vim.keymap.set('n', '<leader>bc', '<cmd>Bdelete<CR>', {desc='Close buffer'})
+vim.keymap.set('n', '<leader>bc', '<cmd>Bdelete<CR>', { desc = 'Close buffer' })
 
 ---
 -- which-key.nvim
@@ -335,11 +335,12 @@ require("which-key").setup({})
 ---
 -- See :help indent-blankline-setup
 require('indent_blankline').setup({
-  char = '▏',
-  show_trailing_blankline_indent = false,
-  show_first_indent_level = false,
-  use_treesitter = true,
-  show_current_context = false
+	char = '▏',
+	show_trailing_blankline_indent = false,
+	show_first_indent_level = false,
+	use_treesitter = true,
+	show_current_context = true,
+	show_current_context_start = true,
 })
 
 
@@ -350,15 +351,15 @@ vim.opt.showmode = false
 
 -- See :help lualine.txt
 require('lualine').setup({
-  options = {
-    theme = 'tokyonight',
-    icons_enabled = true,
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
-    disabled_filetypes = {
-      statusline = {'NvimTree'}
-    }
-  },
+	options = {
+		theme = 'tokyonight',
+		icons_enabled = true,
+		component_separators = { left = '', right = '' },
+		section_separators = { left = '', right = '' },
+		disabled_filetypes = {
+			statusline = { 'NvimTree' }
+		}
+	},
 })
 
 
@@ -399,96 +400,96 @@ require('luasnip.loaders.from_vscode').lazy_load() -- 导入vscode的代码片�
 ---
 -- nvim-cmp (autocomplete)
 ---
-vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
 
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 
-local select_opts = {behavior = cmp.SelectBehavior.Select}
+local select_opts = { behavior = cmp.SelectBehavior.Select }
 
 -- See :help cmp-config
 cmp.setup({ -- cmp是补全的引擎，它可以介绍多种补全的资源，例如lsp，正则表达式，文件，buffer等等
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end
-  },
-  sources = {
-    {name = 'path'}, -- 允许文件路径作为代码提示 例如你写代码 open("./")这时候就会提示各种文件
-    {name = 'nvim_lsp'}, -- 允许lsp提示
-    {name = 'buffer', keyword_length = 3}, -- 允许buffer作为提示
-    {name = 'luasnip', keyword_length = 2}, -- 允许代码片段作为提示 比如之前安装的vscode片段
-  },
-  window = { -- 窗口设置边框
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
-  formatting = { -- 一个设置
-    fields = {'menu', 'abbr', 'kind'},
-    format = function(entry, item)
-      local menu_icon = { -- 这里的是在你按下Tab补全时，用各种标志区分补全来自哪个资源
-        nvim_lsp = 'λ',
-        luasnip = '⋗',
-        buffer = 'Ω',
-        path = '🖫',
-      }
+	snippet = {
+		expand = function(args)
+			luasnip.lsp_expand(args.body)
+		end
+	},
+	sources = {
+		{ name = 'path' },                      -- 允许文件路径作为代码提示 例如你写代码 open("./")这时候就会提示各种文件
+		{ name = 'nvim_lsp' },                  -- 允许lsp提示
+		{ name = 'buffer',  keyword_length = 3 }, -- 允许buffer作为提示
+		{ name = 'luasnip', keyword_length = 2 }, -- 允许代码片段作为提示 比如之前安装的vscode片段
+	},
+	window = {                                -- 窗口设置边框
+		completion = cmp.config.window.bordered(),
+		documentation = cmp.config.window.bordered(),
+	},
+	formatting = { -- 一个设置
+		fields = { 'menu', 'abbr', 'kind' },
+		format = function(entry, item)
+			local menu_icon = { -- 这里的是在你按下Tab补全时，用各种标志区分补全来自哪个资源
+				nvim_lsp = 'λ',
+				luasnip = '⋗',
+				buffer = 'Ω',
+				path = '🖫',
+			}
 
-      item.menu = menu_icon[entry.source.name]
-      return item
-    end,
-  },
-  -- See :help cmp-mapping
-  mapping = { -- 快捷键设置
-    ['<Up>'] = cmp.mapping.select_prev_item(select_opts), -- 用上下选择哪个补全
-    ['<Down>'] = cmp.mapping.select_next_item(select_opts),
+			item.menu = menu_icon[entry.source.name]
+			return item
+		end,
+	},
+	-- See :help cmp-mapping
+	mapping = {                                           -- 快捷键设置
+		['<Up>'] = cmp.mapping.select_prev_item(select_opts), -- 用上下选择哪个补全
+		['<Down>'] = cmp.mapping.select_next_item(select_opts),
 
-    ['<C-p>'] = cmp.mapping.select_prev_item(select_opts), -- 同上
-    ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
+		['<C-p>'] = cmp.mapping.select_prev_item(select_opts), -- 同上
+		['<C-n>'] = cmp.mapping.select_next_item(select_opts),
 
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- 滑动文档，用idea的时候，可以看到一个函数的
-    ['<C-d>'] = cmp.mapping.scroll_docs(4), -- 文档 这两个快捷键可以滑动那个小窗口
+		['<C-u>'] = cmp.mapping.scroll_docs(-4),          -- 滑动文档，用idea的时候，可以看到一个函数的
+		['<C-d>'] = cmp.mapping.scroll_docs(4),           -- 文档 这两个快捷键可以滑动那个小窗口
 
-    ['<C-e>'] = cmp.mapping.abort(), -- 取消
-    ['<C-y>'] = cmp.mapping.confirm({select = true}), -- 确认
-    ['<CR>'] = cmp.mapping.confirm({select = false}), -- 回车表示 确认 很符合使用习惯
+		['<C-e>'] = cmp.mapping.abort(),                  -- 取消
+		['<C-y>'] = cmp.mapping.confirm({ select = true }), -- 确认
+		['<CR>'] = cmp.mapping.confirm({ select = false }), -- 回车表示 确认 很符合使用习惯
 
-    ['<C-f>'] = cmp.mapping(function(fallback) -- 在代码段中向后跳转
-      if luasnip.jumpable(1) then              -- 很多代码段是不只一个参数的
-        luasnip.jump(1)                        -- 例如 for($1 i = 0; i < $2; i$3)
-      else                                     -- 按这个就可以从$1往后面跳，方便你修改
-        fallback()
-      end
-    end, {'i', 's'}),
+		['<C-f>'] = cmp.mapping(function(fallback)        -- 在代码段中向后跳转
+			if luasnip.jumpable(1) then                     -- 很多代码段是不只一个参数的
+				luasnip.jump(1)                               -- 例如 for($1 i = 0; i < $2; i$3)
+			else                                            -- 按这个就可以从$1往后面跳，方便你修改
+				fallback()
+			end
+		end, { 'i', 's' }),
 
-    ['<C-b>'] = cmp.mapping(function(fallback) -- 同上 向前跳转
-      if luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, {'i', 's'}),
+		['<C-b>'] = cmp.mapping(function(fallback) -- 同上 向前跳转
+			if luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { 'i', 's' }),
 
 
-    ['<Tab>'] = cmp.mapping(function(fallback) -- 补全快捷键
-      local col = vim.fn.col('.') - 1
+		['<Tab>'] = cmp.mapping(function(fallback) -- 补全快捷键
+			local col = vim.fn.col('.') - 1
 
-      if cmp.visible() then
-        cmp.select_next_item(select_opts)
-      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-        fallback()
-      else
-        cmp.complete()
-      end
-    end, {'i', 's'}),
+			if cmp.visible() then
+				cmp.select_next_item(select_opts)
+			elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+				fallback()
+			else
+				cmp.complete()
+			end
+		end, { 'i', 's' }),
 
-    ['<S-Tab>'] = cmp.mapping(function(fallback) -- 同上
-      if cmp.visible() then
-        cmp.select_prev_item(select_opts)
-      else
-        fallback()
-      end
-    end, {'i', 's'}),
-  },
+		['<S-Tab>'] = cmp.mapping(function(fallback) -- 同上
+			if cmp.visible() then
+				cmp.select_prev_item(select_opts)
+			else
+				fallback()
+			end
+		end, { 'i', 's' }),
+	},
 })
 
 
@@ -500,78 +501,78 @@ local lspconfig = require('lspconfig')
 local lsp_defaults = lspconfig.util.default_config
 
 lsp_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lsp_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
+	'force',
+	lsp_defaults.capabilities,
+	require('cmp_nvim_lsp').default_capabilities()
 )
 
 ---
 -- Diagnostic customization
 ---
 local sign = function(opts)
-  -- See :help sign_define()
-  vim.fn.sign_define(opts.name, {
-    texthl = opts.name,
-    text = opts.text,
-    numhl = ''
-  })
+	-- See :help sign_define()
+	vim.fn.sign_define(opts.name, {
+		texthl = opts.name,
+		text = opts.text,
+		numhl = ''
+	})
 end
 
-sign({name = 'DiagnosticSignError', text = '✘'}) -- 各种级别的诊断标志 错误 警告 提示 信息
-sign({name = 'DiagnosticSignWarn', text = '▲'})
-sign({name = 'DiagnosticSignHint', text = '⚑'})
-sign({name = 'DiagnosticSignInfo', text = '»'})
+sign({ name = 'DiagnosticSignError', text = '✘' }) -- 各种级别的诊断标志 错误 警告 提示 信息
+sign({ name = 'DiagnosticSignWarn', text = '▲' })
+sign({ name = 'DiagnosticSignHint', text = '⚑' })
+sign({ name = 'DiagnosticSignInfo', text = '»' })
 
 -- See :help vim.diagnostic.config()
 vim.diagnostic.config({ -- 显示文件的诊断信息 例如当前文件哪里出错了 有什么错
-  virtual_text = false,
-  severity_sort = true,
-  float = {
-    border = 'rounded',
-    source = 'always',
-  },
+	virtual_text = false,
+	severity_sort = true,
+	float = {
+		border = 'rounded',
+		source = 'always',
+	},
 })
 
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-  vim.lsp.handlers.hover,
-  {border = 'rounded'}
+	vim.lsp.handlers.hover,
+	{ border = 'rounded' }
 )
 
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-  vim.lsp.handlers.signature_help,
-  {border = 'rounded'}
+	vim.lsp.handlers.signature_help,
+	{ border = 'rounded' }
 )
 
 ---
 -- LSP Keybindings
 ---
 vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
-  group = group,
-  desc = 'LSP actions',
-  callback = function()
-    local bufmap = function(mode, lhs, rhs)
-      local opts = {buffer = true}
-      vim.keymap.set(mode, lhs, rhs, opts)
-    end
+	group = group,
+	desc = 'LSP actions',
+	callback = function()
+		local bufmap = function(mode, lhs, rhs)
+			local opts = { buffer = true }
+			vim.keymap.set(mode, lhs, rhs, opts)
+		end
 
-    -- You can search each function in the help page.
-    -- For example :help vim.lsp.buf.hover()
-    -- 下面的各种函数调用已经非常容易懂了 就不解释了
+		-- You can search each function in the help page.
+		-- For example :help vim.lsp.buf.hover()
+		-- 下面的各种函数调用已经非常容易懂了 就不解释了
 
-    bufmap('n', 'h', '<cmd>lua vim.lsp.buf.hover()<cr>')
-    bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
-    bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
-    bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
-    bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
-    bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
-    bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
-    bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
-    bufmap({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
-    bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
-    bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-    bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
-    bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
-  end
+		bufmap('n', 'h', '<cmd>lua vim.lsp.buf.hover()<cr>')
+		bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
+		bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
+		bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
+		bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
+		bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
+		bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
+		bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
+		bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
+		bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
+		bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
+		bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
+		bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
+	end
 })
 
 
@@ -580,15 +581,15 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
 ---
 -- See :help mason-settings
 require('mason').setup({
-  ui = {border = 'rounded'}
+	ui = { border = 'rounded' }
 })
 
 -- See :help mason-lspconfig-settings
 require('mason-lspconfig').setup({
-  ensure_installed = {
-  },
-  -- See :help mason-lspconfig.setup_handlers()
-  --[[
+	ensure_installed = {
+	},
+	-- See :help mason-lspconfig.setup_handlers()
+	--[[
   handlers = {
     function(server)
       -- See :help lspconfig-setup
@@ -631,46 +632,48 @@ lspconfig.pylsp.setup({
 ---
 -- See :help asynctasks
 vim.g.asyncrun_open = 6
-vim.keymap.set('n', '<leader>cc', '<cmd>cclose<cr>', {desc='Close AsyncTask Term'})
-
+vim.keymap.set('n', '<leader>cq', '<cmd>cclose<cr>', { desc = 'Close QuickFix/AsyncTask Terminal' })
+vim.keymap.set('n', '<leader>ct', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
+vim.keymap.set('n', '<leader>cl', '<cmd>lclose<cr>', { desc = 'Close Location List' })
+vim.keymap.set({ 'n', 'i' }, '<leader>cq', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
 
 ---
 -- Treesitter
 ---
 -- See :help nvim-treesitter-modules
 require('nvim-treesitter.configs').setup({
-  highlight = {
-    enable = true,
-  },
-  -- :help nvim-treesitter-textobjects-modules
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true,
-      keymaps = {
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner',
-      }
-    },
-  },
-  ensure_installed = {
-    'lua',
-    'vim',
-    'vimdoc',
-    'json',
-    'c',
-    'cpp',
-    'python',
-  },
+	highlight = {
+		enable = true,
+	},
+	-- :help nvim-treesitter-textobjects-modules
+	textobjects = {
+		select = {
+			enable = true,
+			lookahead = true,
+			keymaps = {
+				['af'] = '@function.outer',
+				['if'] = '@function.inner',
+				['ac'] = '@class.outer',
+				['ic'] = '@class.inner',
+			}
+		},
+	},
+	ensure_installed = {
+		'lua',
+		'vim',
+		'vimdoc',
+		'json',
+		'c',
+		'cpp',
+		'python',
+	},
 })
 
 local wk = require("which-key")
 wk.register({
-  b = {
-    name = "buffers",
-  },
+	b = {
+		name = "buffers",
+	},
 	c = {
 		name = "close",
 	},
