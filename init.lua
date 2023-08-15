@@ -21,6 +21,10 @@ vim.opt.splitbelow = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+local os_name = vim.loop.os_uname().sysname
+local is_mac = os_name == "Darwin"
+local is_linux = os_name == "Linux"
+local is_windows = os_name == "Windows_NT"
 
 -- ========================================================================== --
 -- ==                             KEYBINDINGS                              == --
@@ -207,6 +211,15 @@ require("lazy").setup({
 	-- treesitter
 	{ 'nvim-treesitter/nvim-treesitter' },
 	{ 'nvim-treesitter/nvim-treesitter-textobjects' },
+
+	-- hlchunk
+	-- {
+	--     "shellRaining/hlchunk.nvim",
+	--     event = { "UIEnter" },
+	--     config = function()
+	--       require("hlchunk").setup({})
+	--     end
+	-- },
 })
 
 -- ========================================================================== --
@@ -334,19 +347,35 @@ vim.keymap.set('n', '<leader>bc', '<cmd>Bdelete<CR>', { desc = 'Close buffer' })
 ---
 require("which-key").setup({})
 
----
--- Indent-blankline
----
--- See :help indent-blankline-setup
-require('indent_blankline').setup({
-	char = '▏',
-	show_trailing_blankline_indent = false,
-	show_first_indent_level = false,
-	use_treesitter = true,
-	show_current_context = true,
-	show_current_context_start = true,
-})
+if is_linux then
+	---
+	-- Indent-blankline
+	---
+	-- See :help indent-blankline-setup
+	require('indent_blankline').setup({
+		char = '▏',
+		show_trailing_blankline_indent = false,
+		show_first_indent_level = false,
+		use_treesitter = true,
+		show_current_context = true,
+		show_current_context_start = true,
+	})
+end
 
+if is_windows then
+    ---
+	-- Indent-blankline
+	---
+	-- See :help indent-blankline-setup
+	require('indent_blankline').setup({
+		char = '▏',
+		show_trailing_blankline_indent = false,
+		show_first_indent_level = false,
+		use_treesitter = false,
+		show_current_context = false,
+		show_current_context_start = false,
+	})
+end
 
 ---
 -- lualine.nvim (statusline)
@@ -615,20 +644,20 @@ require('mason-lspconfig').setup({
 
 lspconfig.clangd.setup({})
 lspconfig.lua_ls.setup({})
---[[
-lspconfig.pylsp.setup({
-  settings = {
-    pylsp = {
-      plugins = {
-        pycodestyle = {
-          ignore = {'W391'},
-          maxLineLength = 100
-        }
-      }
-    }
-  }
-})
---]]
+-- --[[
+-- lspconfig.pylsp.setup({
+--   settings = {
+--     pylsp = {
+--       plugins = {
+--         pycodestyle = {
+--           ignore = {'W391'},
+--           maxLineLength = 100
+--         }
+--       }
+--     }
+--   }
+-- })
+-- --]]
 
 
 ---
@@ -643,37 +672,55 @@ vim.keymap.set('n', '<leader>ct', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
 vim.keymap.set('n', '<leader>cl', '<cmd>lclose<cr>', { desc = 'Close Location List' })
 vim.keymap.set('n', '<leader>ca', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
 
----
--- Treesitter
----
--- See :help nvim-treesitter-modules
-require('nvim-treesitter.configs').setup({
-	highlight = {
-		enable = true,
-	},
-	-- :help nvim-treesitter-textobjects-modules
-	textobjects = {
-		select = {
+if is_linux then
+	---
+	-- Treesitter
+	---
+	-- See :help nvim-treesitter-modules
+	require('nvim-treesitter.configs').setup({
+		highlight = {
 			enable = true,
-			lookahead = true,
-			keymaps = {
-				['af'] = '@function.outer',
-				['if'] = '@function.inner',
-				['ac'] = '@class.outer',
-				['ic'] = '@class.inner',
-			}
 		},
-	},
-	ensure_installed = {
-		'lua',
-		'vim',
-		'vimdoc',
-		'json',
-		'c',
-		'cpp',
-		'python',
-	},
-})
+		-- :help nvim-treesitter-textobjects-modules
+		textobjects = {
+			select = {
+				enable = true,
+				lookahead = true,
+				keymaps = {
+					['af'] = '@function.outer',
+					['if'] = '@function.inner',
+					['ac'] = '@class.outer',
+					['ic'] = '@class.inner',
+				}
+			},
+		},
+		ensure_installed = {
+			'lua',
+			'vim',
+			'vimdoc',
+			'json',
+			'c',
+			'cpp',
+			'python',
+		},
+	})
+end
+
+if is_windows then
+	require('nvim-treesitter.configs').setup({
+		ensure_installed = {
+			'lua',
+			'vim',
+			'vimdoc',
+			'json',
+			'c',
+			'cpp',
+			'python',
+		},
+	})
+end
+
+
 
 local wk = require("which-key")
 wk.register({
