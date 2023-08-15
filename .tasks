@@ -1,0 +1,42 @@
+[setup-cmake-project]
+command=touch main.cpp | echo -e "#include <bits/stdc++.h>\nusing namespace std;\nint main() {\n  return 0;\n}\n" > main.cpp | echo -e "cmake_minimum_required(VERSION 3.16)\nproject(APP)\nadd_executable($(-APP:app) main.cpp)\nset(CMAKE_EXPORT_COMPILE_COMMANDS ON)" > CMakeLists.txt | cmake . -B build
+
+[cmake-build]
+command=cmake --build build
+
+[cmake-rebuild]
+command=rm -rf build | cmake . -B build | cmake --build build
+
+[file-build]
+command:c,cpp=gcc -O2 -Wall "$(VIM_FILEPATH)" -o "$(VIM_PATHNOEXT)" -lstdc++ -lm -msse3
+command:go=go build -o "$(VIM_PATHNOEXT)" "$(VIM_FILEPATH)"
+command:make=make -f "$(VIM_FILEPATH)"
+output=quickfix
+cwd=$(VIM_FILEDIR)
+save=2
+
+[file-run]
+command="$(VIM_FILEPATH)"
+command:c,cpp="$(VIM_PATHNOEXT)"
+command:go="$(VIM_PATHNOEXT)"
+command:python=python "$(VIM_FILENAME)"
+command:javascript=node "$(VIM_FILENAME)"
+command:sh=sh "$(VIM_FILENAME)"
+command:lua=lua "$(VIM_FILENAME)"
+command:perl=perl "$(VIM_FILENAME)"
+command:ruby=ruby "$(VIM_FILENAME)"
+output=terminal
+
+[project-build]
+command=make
+cwd=$(VIM_ROOT)
+
+[project-run]
+command=make run
+cwd=<root>
+output=terminal
+
+[.silent-test]
+command=echo silent
+silent=1
+notify=echo

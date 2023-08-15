@@ -50,6 +50,10 @@ vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write File' })
 vim.keymap.set('n', '<leader>bq', '<cmd>bdelete<cr>', { desc = 'Delete Buffer' })
 vim.keymap.set('n', '<leader>bl', '<cmd>buffer #<cr>', { desc = 'Goto Last Buffer' })
 vim.keymap.set('n', '<leader><space>', '<cmd>buffers<cr>:buffer<Space>', { desc = 'Goto Buffer:' })
+
+
+vim.api.nvim_create_user_command('GotoMark', "execute \"normal! '\"..<f-args>", { nargs = 1, })
+vim.keymap.set('n', '<leader>m', '<cmd>marks<cr>:GotoMark<Space>', { desc = 'Goto Mark:' })
 -- vim.keymap.set('n', '<leader>e', '<cmd>Lexplore %:p:h<cr>') -- use nvim tree
 -- vim.keymap.set('n', '<leader>E', '<cmd>Lexplore<cr>') -- use nvim-tree
 
@@ -632,10 +636,12 @@ lspconfig.pylsp.setup({
 ---
 -- See :help asynctasks
 vim.g.asyncrun_open = 6
+vim.g.asynctasks_extra_config = { vim.fn.stdpath("config") .. "/.tasks", vim.fn.stdpath("data") .. "/.tasks" }
+vim.g.asyncrun_rootmarks = { '.git', '.svn', '.root', '.project', '.hg', '.tasks' }
 vim.keymap.set('n', '<leader>cq', '<cmd>cclose<cr>', { desc = 'Close QuickFix/AsyncTask Terminal' })
 vim.keymap.set('n', '<leader>ct', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
 vim.keymap.set('n', '<leader>cl', '<cmd>lclose<cr>', { desc = 'Close Location List' })
-vim.keymap.set({ 'n', 'i' }, '<leader>cq', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
+vim.keymap.set('n', '<leader>ca', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
 
 ---
 -- Treesitter
