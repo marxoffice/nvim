@@ -427,6 +427,10 @@ require('bufferline').setup({
 -- Luasnip (snippet engine)
 ---
 -- See :help luasnip-loaders
+local snippet_path = vim.fn.stdpath("config") .. "/my-snippets/"
+if not vim.tbl_contains(vim.opt.rtp:get(), snippet_path) then
+		vim.opt.rtp:append(snippet_path)
+end
 require('luasnip.loaders.from_vscode').lazy_load() -- 导入vscode的代码片段作为提示
 
 
