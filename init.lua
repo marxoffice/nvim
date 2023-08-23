@@ -47,7 +47,7 @@ vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- cop
 vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from System' }) -- paste
 
 -- Delete text
-vim.keymap.set({ 'n', 'x' }, 'x', '"_x')
+vim.keymap.set({ 'n', 'x' }, 'x', '"_d') -- delete
 
 -- Commands
 vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write File' })
