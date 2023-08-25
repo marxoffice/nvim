@@ -705,11 +705,11 @@ startify.section.header.opts.position = 'center' -- 让图标显示在中间 对
 -- startify.section.mru.val = { { type = "padding", val = 0 } }                         -- 这一行可以让近期文件不显示
 -- startify.section.mru_cwd.val = { { type = "padding", val = 0 } }                     -- 这一行可以不显示当前文件夹的文件
 startify.section.top_buttons.val = {
-	startify.button("e", "Edit New File", "<cmd>ene <CR>", { desc = "Edit New File" }), -- 快捷键配置 四个参数分别是 按键 名称 具体值 配置信息 一旦离开初始页面 配置就失效了
-	startify.button("SPC f f", "Find Files"),                                          -- 不写快捷键和配置 只会显示 不会真的设置新的快捷键 但是还是可以运行
-	startify.button("SPC f g", "Grep Files (Find Contents)"),
-	startify.button("SPC f h", "Find History Files"),
-	startify.button("SPC f t", "Find AsyncTasks"),
+	startify.button("e", "Edit New File", "<cmd>ene <CR>", { desc = "Edit New File" }),                -- 快捷键配置 四个参数分别是 按键 名称 具体值 配置信息 一旦离开初始页面 配置就失效了
+	startify.button("SPC f f", "Find Files", '<cmd>Telescope find_files<cr>', { desc = 'Find Files' }), -- 如果不写具体值和配置信息 (3-4参数) 只会显示 不会真的设置新的快捷键 这也意味着把光标设置到这里 并且按下回车会出现问题
+	startify.button("SPC f g", "Grep Files (Find Contents)", '<cmd>Telescope live_grep<cr>', { desc = 'Find Grep' }),
+	startify.button("SPC f h", "Find History Files", '<cmd>Telescope oldfiles<cr>', { desc = 'Find History Files' }),
+	startify.button("SPC f t", "Find AsyncTasks", '<cmd>Telescope asynctasks all<cr>', { desc = 'Find AsyncTasks' }),
 }
 
 startify.section.bottom_buttons.val = {
