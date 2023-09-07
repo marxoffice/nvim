@@ -40,7 +40,7 @@ vim.keymap.set({ 'n', 'x', 'o' }, '<leader>U', ':source $MYVIMRC<cr>', { desc = 
 -- Shortcuts
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>h', '^', { desc = 'Goto Current Line Left' })
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>l', 'g_', { desc = 'Goto Current Line Right' })
-vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' })
+vim.keymap.set('n', '<C-a>', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' })
 
 -- Basic clipboard interaction
 vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- copy
@@ -984,8 +984,8 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
 	group = group,
 	desc = 'LSP actions',
 	callback = function()
-		local bufmap = function(mode, lhs, rhs)
-			local opts = { buffer = true }
+		local bufmap = function(mode, lhs, rhs, desc)
+			local opts = { buffer = true, desc = desc }
 			vim.keymap.set(mode, lhs, rhs, opts)
 		end
 
@@ -993,19 +993,20 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
 		-- For example :help vim.lsp.buf.hover()
 		-- 下面的各种函数调用已经非常容易懂了 就不解释了
 
-		bufmap('n', 'h', '<cmd>lua vim.lsp.buf.hover()<cr>')
-		bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
-		bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
-		bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
-		bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
-		bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
-		bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
-		bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>')
-		bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>')
-		bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>')
-		bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-		bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
-		bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
+		bufmap('n', 'h', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc')
+		bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Goto definition')
+		bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Goto declaration')
+		bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', 'Goto implementation')
+		bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>',
+			'Goto definition of the type of the symbol under the cursor')
+		bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', 'List all the references')
+		bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Display signature help')
+		bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', 'Rename symbol under the cursor')
+		bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer')
+		bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', 'Display code action')
+		bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', 'Display diagnostic')
+		bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', 'Goto previous diagnostic')
+		bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', 'Goto next diagnostic')
 	end
 })
 
@@ -1072,6 +1073,7 @@ vim.keymap.set('n', '<leader>cq', '<cmd>cclose<cr>', { desc = 'Close QuickFix/As
 vim.keymap.set('n', '<leader>ct', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
 vim.keymap.set('n', '<leader>cl', '<cmd>lclose<cr>', { desc = 'Close Location List' })
 vim.keymap.set('n', '<leader>ca', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
+vim.keymap.set('n', '<leader>cb', '<cmd>Bdelete<CR>', { desc = 'Close buffer' })
 
 if is_linux then
 	---
@@ -1135,3 +1137,15 @@ wk.register({
 		name = "telescope find"
 	}
 }, { prefix = "<leader>" })
+
+wk.register({
+	["<leader>"] = {
+		name = "Leader"
+	},
+	["]"] = {
+		name = "Goto next"
+	},
+	["["] = {
+		name = "Goto prev"
+	}
+})
