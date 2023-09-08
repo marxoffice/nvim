@@ -14,6 +14,7 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+vim.opt.whichwrap:append("<,>,[,]")
 
 -- use nvim tree
 -- vim.g.netrw_banner = 0
@@ -41,13 +42,18 @@ vim.keymap.set({ 'n', 'x', 'o' }, '<leader>U', ':source $MYVIMRC<cr>', { desc = 
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>h', '^', { desc = 'Goto Current Line Left' })
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>l', 'g_', { desc = 'Goto Current Line Right' })
 vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' }) -- By default, Ctrl + a is increment number under Ctrl + x is decrement
+vim.keymap.set('n', '<leader>yp', ":let @+=expand('%:p:h')<cr>", { desc = 'Copy the path of CurrentFile' })
 
 -- Basic clipboard interaction
 vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- copy
 vim.keymap.set({ 'n', 'x' }, 'gp', '"+p', { desc = 'Paste from System' }) -- paste
 
 -- Delete text
-vim.keymap.set({ 'n', 'x' }, 'x', '"_d') -- delete
+vim.keymap.set({ 'n', 'x' }, 'x', '"_d', { desc = 'Delete Char' }) -- delete
+
+-- Search and replace
+vim.keymap.set('n', '<leader>r', ':%s/a/b/gc', { desc = 'Replace a With b and Asked' });
+vim.keymap.set('n', '<leader>ch', '<cmd>noh<cr>', { desc = 'Close Search Highlight' });
 
 -- Commands
 vim.keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write File' })
@@ -993,7 +999,7 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
 		-- For example :help vim.lsp.buf.hover()
 		-- 下面的各种函数调用已经非常容易懂了 就不解释了
 
-		bufmap('n', 'h', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc')
+		bufmap('n', 'H', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- h is left
 		bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Goto definition')
 		bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Goto declaration')
 		bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', 'Goto implementation')
@@ -1135,6 +1141,9 @@ wk.register({
 	},
 	f = {
 		name = "telescope find"
+	},
+	y = {
+		name = "copy to system"
 	}
 }, { prefix = "<leader>" })
 
