@@ -3,6 +3,7 @@
 -- ========================================================================== --
 
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -147,16 +148,73 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	-- file explorer tree
-	{ "nvim-tree/nvim-tree.lua" },
+	{
+		"nvim-tree/nvim-tree.lua",
+		lazy = true,
+		cmd = {
+			"NvimTreeToggle",
+			"NvimTreeOpen",
+			"NvimTreeFindFile",
+			"NvimTreeFindFileToggle",
+			"NvimTreeRefresh",
+		},
+		config = function()
+			require('nvim-tree').setup({
+				hijack_cursor = false,
+				on_attach = function(bufnr)
+					local bufmap = function(lhs, rhs, desc)
+						vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+					end
+
+					-- :help nvim-tree.api
+					local api = require('nvim-tree.api')
+
+					bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
+					bufmap('o', api.node.open.edit, 'Expand folder or go to file')
+					bufmap('A', api.tree.expand_all, 'Expand all')
+					bufmap('H', api.node.navigate.parent_close, 'Hidden subtree, Close parent folder')
+					bufmap('C', api.tree.change_root_to_node, 'Change root to node')
+					bufmap('y', api.fs.copy.node, 'Copy')
+					bufmap('d', api.fs.cut, 'Cut')
+					bufmap('D', api.fs.remove, 'Delete')
+					bufmap('p', api.fs.paste, 'Paste')
+					bufmap('r', api.fs.rename, 'Rename')
+					bufmap('<Tab>', api.node.open.preview, 'Open Preview')
+					bufmap('.', api.node.run.cmd, 'Run Command')
+					bufmap('O', api.node.run.system, 'Run in System')
+				end
+			})
+		end
+	},
 	{ "nvim-tree/nvim-web-devicons" },
 
 	-- fuzz finder
-	{ 'nvim-telescope/telescope.nvim',            branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+	{
+		'nvim-telescope/telescope.nvim',
+		branch = '0.1.x',
+		lazy = true,
+		cmd = "Telescope",
+		config = function()
+			require('telescope').load_extension('fzf')
+		end,
+	},
+	{ 'nvim-lua/plenary.nvim' },
 	{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 	{ 'GustavoKatel/telescope-asynctasks.nvim' },
 
 	-- terminal
-	{ 'akinsho/toggleterm.nvim' },
+	{
+		'akinsho/toggleterm.nvim',
+		lazy = true,
+		cmd = "ToggleTerm",
+		config = function()
+			require('toggleterm').setup({
+				open_mapping = '<C-g>',
+				direction = 'float',
+				shade_terminals = true
+			})
+		end
+	},
 
 	-- surround
 	{ 'kylechui/nvim-surround' },
@@ -230,6 +288,9 @@ require("lazy").setup({
 	--     end
 	-- },
 })
+vim.keymap.set('n', '<leader>pr', '<cmd>Lazy restore<cr>', { desc = 'Restore Plugin from lock-file' })
+vim.keymap.set('n', '<leader>pu', '<cmd>Lazy update<cr>', { desc = 'Update Plugin' })
+vim.keymap.set('n', '<leader>ps', '<cmd>Lazy sync<cr>', { desc = 'Sync: Clean and Update plugin' })
 
 -- ========================================================================== --
 -- ==                         PLUGIN CONFIGURATION                         == --
@@ -247,31 +308,6 @@ vim.cmd.colorscheme('tokyonight')
 -- nvim-tree (File explorer)
 ---
 -- See :help nvim-tree-setup
-require('nvim-tree').setup({
-	hijack_cursor = false,
-	on_attach = function(bufnr)
-		local bufmap = function(lhs, rhs, desc)
-			vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
-		end
-
-		-- :help nvim-tree.api
-		local api = require('nvim-tree.api')
-
-		bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
-		bufmap('o', api.node.open.edit, 'Expand folder or go to file')
-		bufmap('A', api.tree.expand_all, 'Expand all')
-		bufmap('H', api.node.navigate.parent_close, 'Hidden subtree, Close parent folder')
-		bufmap('C', api.tree.change_root_to_node, 'Change root to node')
-		bufmap('y', api.fs.copy.node, 'Copy')
-		bufmap('d', api.fs.cut, 'Cut')
-		bufmap('D', api.fs.remove, 'Delete')
-		bufmap('p', api.fs.paste, 'Paste')
-		bufmap('r', api.fs.rename, 'Rename')
-		bufmap('<Tab>', api.node.open.preview, 'Open Preview')
-		bufmap('.', api.node.run.cmd, 'Run Command')
-		bufmap('O', api.node.run.system, 'Run in System')
-	end
-})
 
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Open/Close NvimTree' })
 
@@ -287,7 +323,6 @@ vim.keymap.set('n', '<leader>fg', '<cmd>Telescope live_grep<cr>', { desc = 'Find
 vim.keymap.set('n', '<leader>fd', '<cmd>Telescope diagnostics<cr>', { desc = 'Find Diagnostics' })
 vim.keymap.set('n', '<leader>fc', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { desc = 'Find in Current Buffer' })
 vim.keymap.set('n', '<leader>ft', '<cmd>Telescope asynctasks all<cr>', { desc = 'Find AsyncTasks' })
-require('telescope').load_extension('fzf')
 -- require('telescope').extensions.asynctasks.all() -- open at nvim start
 
 
@@ -295,11 +330,7 @@ require('telescope').load_extension('fzf')
 -- toggleterm
 ---
 -- See :help toggleterm-roadmap
-require('toggleterm').setup({
-	open_mapping = '<C-g>',
-	direction = 'float',
-	shade_terminals = true
-})
+vim.keymap.set('n', '<C-g>', '<cmd>ToggleTerm<cr>', { desc = 'Toggler Terminal' })
 
 
 ---
@@ -1144,6 +1175,9 @@ wk.register({
 	},
 	y = {
 		name = "copy to system"
+	},
+	p = {
+		name = "plugin"
 	}
 }, { prefix = "<leader>" })
 
