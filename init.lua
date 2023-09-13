@@ -282,11 +282,18 @@ require("lazy").setup({
 	-- hlchunk
 	-- {
 	--     "shellRaining/hlchunk.nvim",
+	--     lazy = true,
 	--     event = { "UIEnter" },
 	--     config = function()
 	--       require("hlchunk").setup({})
 	--     end
 	-- },
+
+	{
+		'voldikss/vim-translator',
+		lazy = true,
+		cmd = { 'Translate', 'TranslateR', 'TranslateW' },
+	},
 })
 vim.keymap.set('n', '<leader>pr', '<cmd>Lazy restore<cr>', { desc = 'Restore Plugin from lock-file' })
 vim.keymap.set('n', '<leader>pu', '<cmd>Lazy update<cr>', { desc = 'Update Plugin' })
@@ -1162,6 +1169,14 @@ end
 
 
 
+---
+-- vim-translator
+--
+-- See :help translator.txt
+vim.keymap.set('n', '<leader>ts', ':TranslateW<cr>', { desc = 'Translate this word' })
+vim.keymap.set('x', '<leader>ts', ":TranslateW<cr>", { desc = 'Translate selected Text' })
+vim.keymap.set('x', '<leader>tr', ":TranslateR<cr>", { desc = 'Translate and Replace' })
+
 local wk = require("which-key")
 wk.register({
 	b = {
@@ -1178,7 +1193,10 @@ wk.register({
 	},
 	p = {
 		name = "plugin"
-	}
+	},
+	t = {
+		name = "translate"
+	},
 }, { prefix = "<leader>" })
 
 wk.register({
@@ -1192,3 +1210,9 @@ wk.register({
 		name = "Goto prev"
 	}
 })
+
+wk.register({
+	t = {
+		name = "translate"
+	}
+}, { prefix = "<leader>", mode = "v" })
