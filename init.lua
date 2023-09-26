@@ -62,11 +62,32 @@ vim.keymap.set('n', '<leader>bq', '<cmd>bdelete<cr>', { desc = 'Delete Buffer' }
 vim.keymap.set('n', '<leader>bl', '<cmd>buffer #<cr>', { desc = 'Goto Last Buffer' })
 vim.keymap.set('n', '<leader><space>', '<cmd>buffers<cr>:buffer<Space>', { desc = 'Goto Buffer:' })
 
-
+-- marks
 vim.api.nvim_create_user_command('GotoMark', "execute \"normal! '\"..<f-args>", { nargs = 1, })
 vim.keymap.set('n', '<leader>m', '<cmd>marks<cr>:GotoMark<Space>', { desc = 'Goto Mark:' })
 -- vim.keymap.set('n', '<leader>e', '<cmd>Lexplore %:p:h<cr>') -- use nvim tree
 -- vim.keymap.set('n', '<leader>E', '<cmd>Lexplore<cr>') -- use nvim-tree
+
+-- sessions
+vim.keymap.set('n', '<leader>ss', '<cmd>mksession! marx.vim<cr>', { desc = 'Save Default Session' })
+vim.keymap.set('n', '<leader>sl',
+  function()
+    local proj_vim_path = vim.fn.getcwd() .. "/marx.vim"
+    if (vim.fn.filereadable(proj_vim_path) == 1)
+    then
+      vim.cmd("source marx.vim")
+    else
+      print("No session file in this directory")
+    end
+  end
+  , { desc = 'Load Default Session (if have)' })
+
+-- 下面这两条快捷键可以 需要手动输入文件名再回车 一般用不到吧 毕竟一个文件夹多个session有点奇怪
+vim.keymap.set('n', '<leader>sS', ':mksession! ', { desc = 'Save Session with name' })
+vim.keymap.set('n', '<leader>sL', ':source ', { desc = 'Load Session with name' })
+
+vim.keymap.set('n', '<leader>sw', '<cmd>wshada! scret.shada<cr>', { desc = 'Save Shada (regs marks history)' })
+vim.keymap.set('n', '<leader>sr', '<cmd>rshada! scret.shada<cr>', { desc = 'Load Shada (regs marks history)' })
 
 --[[
 local function netrw_mapping()
@@ -1195,6 +1216,9 @@ wk.register({
   },
   t = {
     name = "translate"
+  },
+  s = {
+    name = "session"
   },
 }, { prefix = "<leader>" })
 
