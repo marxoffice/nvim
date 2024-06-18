@@ -268,7 +268,7 @@ require("lazy").setup({
   { "goolord/alpha-nvim" },
 
   -- indent blank visual
-  { 'lukas-reineke/indent-blankline.nvim' },
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl'},
 
   -- below status line
   { 'nvim-lualine/lualine.nvim' },
@@ -813,14 +813,15 @@ if is_linux then
   ---
   -- Indent-blankline
   ---
-  -- See :help indent-blankline-setup
-  require('indent_blankline').setup({
-    char = '▏',
-    show_trailing_blankline_indent = false,
-    show_first_indent_level = false,
-    use_treesitter = true,
-    show_current_context = true,
-    show_current_context_start = true,
+  -- See :help ibl.setup()
+  require('ibl').setup({
+    enabled = true,
+    scope = {
+      enabled = true,
+    },
+    indent = {
+      char = '▏',
+    },
   })
 end
 
@@ -828,14 +829,15 @@ if is_windows then
   ---
   -- Indent-blankline
   ---
-  -- See :help indent-blankline-setup
-  require('indent_blankline').setup({
-    char = '▏',
-    show_trailing_blankline_indent = false,
-    show_first_indent_level = false,
-    use_treesitter = false,
-    show_current_context = false,
-    show_current_context_start = false,
+  -- See :help ibl.setup()
+  require('ibl').setup({
+    enabled = true,
+    scope = {
+      enabled = false,
+    },
+    indent = {
+      char = '▏',
+    },
   })
 end
 
