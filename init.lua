@@ -268,7 +268,7 @@ require("lazy").setup({
   { "goolord/alpha-nvim" },
 
   -- indent blank visual
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl'},
+  { 'lukas-reineke/indent-blankline.nvim',        main = 'ibl' },
 
   -- below status line
   { 'nvim-lualine/lualine.nvim' },
