@@ -1200,44 +1200,17 @@ vim.keymap.set('x', '<leader>ts', ":TranslateW<cr>", { desc = 'Translate selecte
 vim.keymap.set('x', '<leader>tr', ":TranslateR<cr>", { desc = 'Translate and Replace' })
 
 local wk = require("which-key")
-wk.register({
-  b = {
-    name = "buffers",
-  },
-  c = {
-    name = "close",
-  },
-  f = {
-    name = "telescope find"
-  },
-  y = {
-    name = "copy to system"
-  },
-  p = {
-    name = "plugin"
-  },
-  t = {
-    name = "translate"
-  },
-  s = {
-    name = "session"
-  },
-}, { prefix = "<leader>" })
-
-wk.register({
-  ["<leader>"] = {
-    name = "Leader"
-  },
-  ["]"] = {
-    name = "Goto next"
-  },
-  ["["] = {
-    name = "Goto prev"
-  }
+wk.add({
+  { "<leader>",  group = "Leader" },
+  { "<leader>t", group = "Translate",     mode = "v" },
+  { "<leader>b", group = "buffers" },
+  { "<leader>c", group = "close" },
+  { "<leader>f", group = "telescope find" },
+  { "<leader>y", group = "copy to system" },
+  { "<leader>p", group = "plugin" },
+  { "<leader>t", group = "translate" },
+  { "<leader>s", group = "session" },
+  { "]",         group = "Goto next" },
+  { "[",         group = "Goto prev" },
 })
 
-wk.register({
-  t = {
-    name = "translate"
-  }
-}, { prefix = "<leader>", mode = "v" })
