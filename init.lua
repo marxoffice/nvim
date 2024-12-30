@@ -315,6 +315,71 @@ require("lazy").setup({
     lazy = true,
     cmd = { 'Translate', 'TranslateR', 'TranslateW' },
   },
+
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
+  },
+
+  {
+    "folke/trouble.nvim",
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xs",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<leader>xl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<leader>xL",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<leader>xq",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
+  },
+
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  }
+
 })
 vim.keymap.set('n', '<leader>pr', '<cmd>Lazy restore<cr>', { desc = 'Restore Plugin from lock-file' })
 vim.keymap.set('n', '<leader>pu', '<cmd>Lazy update<cr>', { desc = 'Update Plugin' })
@@ -352,6 +417,21 @@ vim.keymap.set('n', '<leader>fd', '<cmd>Telescope diagnostics<cr>', { desc = 'Fi
 vim.keymap.set('n', '<leader>fc', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { desc = 'Find in Current Buffer' })
 vim.keymap.set('n', '<leader>ft', '<cmd>Telescope asynctasks all<cr>', { desc = 'Find AsyncTasks' })
 -- require('telescope').extensions.asynctasks.all() -- open at nvim start
+local actions = require("telescope.actions")
+local open_with_trouble = require("trouble.sources.telescope").open
+-- Use this to add more results without clearing the trouble list
+local add_to_trouble = require("trouble.sources.telescope").add
+
+local telescope = require("telescope")
+
+telescope.setup({
+  defaults = {
+    mappings = {
+      i = { ["<c-t>"] = open_with_trouble },
+      n = { ["<c-t>"] = open_with_trouble },
+    },
+  },
+})
 
 
 ---
@@ -1137,7 +1217,7 @@ vim.g.asynctasks_extra_config = { vim.fn.stdpath("config") .. "/.tasks", vim.fn.
 vim.g.asyncrun_rootmarks = { '.git', '.svn', '.root', '.project', '.hg', '.tasks' }
 vim.keymap.set('n', '<leader>cq', '<cmd>cclose<cr>', { desc = 'Close QuickFix/AsyncTask Terminal' })
 vim.keymap.set('n', '<leader>ct', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
-vim.keymap.set('n', '<leader>cl', '<cmd>lclose<cr>', { desc = 'Close Location List' })
+vim.keymap.set('n', '<leader>cL', '<cmd>lclose<cr>', { desc = 'Close Location List' })
 vim.keymap.set('n', '<leader>ca', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
 vim.keymap.set('n', '<leader>cb', '<cmd>Bdelete<CR>', { desc = 'Close buffer' })
 
@@ -1199,18 +1279,61 @@ vim.keymap.set('n', '<leader>ts', ':TranslateW<cr>', { desc = 'Translate this wo
 vim.keymap.set('x', '<leader>ts', ":TranslateW<cr>", { desc = 'Translate selected Text' })
 vim.keymap.set('x', '<leader>tr', ":TranslateR<cr>", { desc = 'Translate and Replace' })
 
+---
+-- which-key
+--
+-- See :help which-key
 local wk = require("which-key")
 wk.add({
-  { "<leader>",  group = "Leader" },
-  { "<leader>t", group = "Translate",     mode = "v" },
+  { "<leader>",  group = "leader" },
   { "<leader>b", group = "buffers" },
   { "<leader>c", group = "close" },
   { "<leader>f", group = "telescope find" },
-  { "<leader>y", group = "copy to system" },
   { "<leader>p", group = "plugin" },
-  { "<leader>t", group = "translate" },
   { "<leader>s", group = "session" },
+  { "<leader>t", group = "translate" },
+  { "<leader>x", group = "trouble" }, -- use t for trouble?
+  { "<leader>y", group = "copy to system" },
   { "]",         group = "Goto next" },
   { "[",         group = "Goto prev" },
 })
 
+
+---
+-- noice
+--
+-- See :help noice
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true,         -- use a classic bottom cmdline for search
+    command_palette = true,       -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false,       -- add a border to hover docs and signature help
+  },
+})
+
+
+---
+-- todo-comments
+--
+-- See :help todo-comments
+vim.keymap.set("n", "]t", function()
+  require("todo-comments").jump_next()
+end, { desc = "Next todo comment" })
+
+vim.keymap.set("n", "[t", function()
+  require("todo-comments").jump_prev()
+end, { desc = "Previous todo comment" })
+
+-- set keywords if you want
+-- require("todo-comments").jump_next({keywords = { "ERROR", "WARNING" }})
