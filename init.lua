@@ -1089,7 +1089,10 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
 
 ---
 -- Diagnostic customization
+-- deprecated
 ---
+---
+--[[
 local sign = function(opts)
   -- See :help sign_define()
   vim.fn.sign_define(opts.name, {
@@ -1103,16 +1106,45 @@ sign({ name = 'DiagnosticSignError', text = '✘' }) -- 各种级别的诊断标
 sign({ name = 'DiagnosticSignWarn', text = '▲' })
 sign({ name = 'DiagnosticSignHint', text = '⚑' })
 sign({ name = 'DiagnosticSignInfo', text = '»' })
+--]]
+--
 
 -- See :help vim.diagnostic.config()
 vim.diagnostic.config({ -- 显示文件的诊断信息 例如当前文件哪里出错了 有什么错
   virtual_text = false,
-  severity_sort = true,
-  float = {
-    border = 'rounded',
-    source = 'always',
+  underline = { severity = vim.diagnostic.severity.ERROR },
+  signs = vim.g.have_nerd_font and {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '󰅚 ',
+      [vim.diagnostic.severity.WARN] = '󰀪 ',
+      [vim.diagnostic.severity.INFO] = '󰋽 ',
+      [vim.diagnostic.severity.HINT] = '󰌶 ',
+    },
+  } or {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✘',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.INFO] = '⚑',
+      [vim.diagnostic.severity.HINT] = '»',
+    },
   },
 })
+
+--[[
+  virtual_text = {
+    source = 'if_many',
+    spacing = 2,
+    format = function(diagnostic)
+      local diagnostic_message = {
+        [vim.diagnostic.severity.ERROR] = diagnostic.message,
+        [vim.diagnostic.severity.WARN] = diagnostic.message,
+        [vim.diagnostic.severity.INFO] = diagnostic.message,
+        [vim.diagnostic.severity.HINT] = diagnostic.message,
+      }
+      return diagnostic_message[diagnostic.severity]
+    end,
+  },
+})--]]
 
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
