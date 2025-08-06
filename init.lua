@@ -1113,14 +1113,7 @@ sign({ name = 'DiagnosticSignInfo', text = '»' })
 vim.diagnostic.config({ -- 显示文件的诊断信息 例如当前文件哪里出错了 有什么错
   virtual_text = false,
   underline = { severity = vim.diagnostic.severity.ERROR },
-  signs = vim.g.have_nerd_font and {
-    text = {
-      [vim.diagnostic.severity.ERROR] = '󰅚 ',
-      [vim.diagnostic.severity.WARN] = '󰀪 ',
-      [vim.diagnostic.severity.INFO] = '󰋽 ',
-      [vim.diagnostic.severity.HINT] = '󰌶 ',
-    },
-  } or {
+  signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = '✘',
       [vim.diagnostic.severity.WARN] = '▲',
@@ -1179,6 +1172,7 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
     bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>',
       'Goto definition of the type of the symbol under the cursor')
     bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', 'List all the references')
+    -- 注意这里的gr快捷键 在新版nvim 0.11中 会自动注册 gra grr grn等lsp相关快捷键 这里需要考虑是否接受新的这些快捷键
     bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Display signature help')
     bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', 'Rename symbol under the cursor')
     bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer')
@@ -1328,6 +1322,7 @@ wk.add({
   { "<leader>y", group = "copy to system" },
   { "]",         group = "Goto next" },
   { "[",         group = "Goto prev" },
+  -- { "gr", group = "LSP Actions" }, -- 如果接受新的lsp快捷键 则开启此处
 })
 
 
