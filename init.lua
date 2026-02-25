@@ -937,6 +937,14 @@ require('lualine').setup({
       statusline = { 'NvimTree' }
     }
   },
+  sections = {
+    lualine_x = {
+    {
+        require("noice").api.status.mode.get,
+        cond = require("noice").api.status.mode.has,
+    }, "encoding", "fileformat", "filetype"
+},
+  }
 })
 
 
