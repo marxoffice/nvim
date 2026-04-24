@@ -1147,15 +1147,18 @@ vim.diagnostic.config({ -- 显示文件的诊断信息 例如当前文件哪里�
   },
 })--]]
 
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-  vim.lsp.handlers.hover,
-  { border = 'rounded' }
-)
+-- 使用 vim.lsp.handlers.hover 和 signature_help 的配置方式避免 deprecated 警告
+vim.lsp.handlers['textDocument/hover'] = function(err, result, ctx, config)
+  config = config or {}
+  config.border = 'rounded'
+  return vim.lsp.handlers.hover(err, result, ctx, config)
+end
 
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-  vim.lsp.handlers.signature_help,
-  { border = 'rounded' }
-)
+vim.lsp.handlers['textDocument/signatureHelp'] = function(err, result, ctx, config)
+  config = config or {}
+  config.border = 'rounded'
+  return vim.lsp.handlers.signature_help(err, result, ctx, config)
+end
 
 ---
 -- LSP Keybindings
