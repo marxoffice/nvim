@@ -1179,20 +1179,21 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
 
     -- You can search each function in the help page.
     -- For example :help vim.lsp.buf.hover()
-    -- 下面的各种函数调用已经非常容易懂了 就不解释了
 
-    bufmap('n', 'H', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- h is left
+    -- Neovim 0.11+ 内置 LSP 快捷键（无需手动配置）：
+    -- grn      - vim.lsp.buf.rename()              (原 <F2>)
+    -- grr      - vim.lsp.buf.references()          (原 gr)
+    -- gri      - vim.lsp.buf.implementation()      (原 gi)
+    -- grt      - vim.lsp.buf.type_definition()    (原 go)
+    -- gra      - vim.lsp.buf.code_action()         (原 <F4>)
+    -- gO       - vim.lsp.buf.document_symbol()
+    -- CTRL-S   - vim.lsp.buf.signature_help()      (Insert/Select 模式，原 gs)
+
+    -- 以下为需要手动配置的快捷键（Neovim 未提供默认）
+    bufmap('n', 'grh', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- 网上很多会说使用K这个快捷键 事实上K是默认快捷键 Knowledge的意思 可以直接查看各种文档的 比如C语言printf 上面按K 就会看到文档 Python上面调用则会使用pydoc查看python文档的 因此这里用gr前缀来配置快捷键
     bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Goto definition')
     bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Goto declaration')
-    bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', 'Goto implementation')
-    bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>',
-      'Goto definition of the type of the symbol under the cursor')
-    bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', 'List all the references')
-    -- 注意这里的gr快捷键 在新版nvim 0.11中 会自动注册 gra grr grn等lsp相关快捷键 这里需要考虑是否接受新的这些快捷键
-    bufmap('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Display signature help')
-    bufmap('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', 'Rename symbol under the cursor')
     bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer')
-    bufmap('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', 'Display code action')
     bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', 'Display diagnostic')
     bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', 'Goto previous diagnostic')
     bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', 'Goto next diagnostic')
@@ -1335,11 +1336,11 @@ wk.add({
   { "<leader>p", group = "plugin" },
   { "<leader>s", group = "session" },
   { "<leader>t", group = "translate" },
-  { "<leader>x", group = "trouble" }, -- use t for trouble?
+  { "<leader>x", group = "trouble" },
   { "<leader>y", group = "copy to system" },
   { "]",         group = "Goto next" },
   { "[",         group = "Goto prev" },
-  -- { "gr", group = "LSP Actions" }, -- 如果接受新的lsp快捷键 则开启此处
+  { "gr",        group = "LSP (n:rename, r:refs, i:impl, t:type, a:action, h:hover)" },
 })
 
 
