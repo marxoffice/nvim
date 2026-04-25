@@ -281,6 +281,11 @@ require("lazy").setup({
   { 'williamboman/mason.nvim' },
   { 'williamboman/mason-lspconfig.nvim' },
 
+  -- DAP (Debug Adapter Protocol)
+  { 'mfussenegger/nvim-dap' },
+  { 'rcarriga/nvim-dap-ui',          dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
+  { 'jay-babu/mason-nvim-dap.nvim',  dependencies = { 'williamboman/mason.nvim', 'mfussenegger/nvim-dap' } },
+
   -- Autocomplete
   { 'hrsh7th/nvim-cmp' },
   { 'hrsh7th/cmp-buffer' },
@@ -1325,6 +1330,7 @@ wk.add({
   { "<leader>",  group = "leader" },
   { "<leader>b", group = "buffers" },
   { "<leader>c", group = "close" },
+  { "<leader>d", group = "debug (DAP)" },
   { "<leader>f", group = "telescope find" },
   { "<leader>p", group = "plugin" },
   { "<leader>s", group = "session" },
@@ -1375,3 +1381,132 @@ end, { desc = "Previous todo comment" })
 
 -- set keywords if you want
 -- require("todo-comments").jump_next({keywords = { "ERROR", "WARNING" }})
+
+
+---
+-- DAP (Debug Adapter Protocol)
+---
+-- See :help dap
+-- See :help dapui
+-- See :help mason-nvim-dap
+
+local dap = require('dap')
+local dapui = require('dapui')
+
+-- DAP UI 配置
+dapui.setup({
+  icons = { expanded = '▾', collapsed = '▸', current_frame = '▸' },
+  mappings = {
+    expand = { '<CR>', '<2-LeftMouse>' },
+    open = 'o',
+    remove = 'd',
+    edit = 'e',
+    repl = 'r',
+    toggle = 't',
+  },
+  layouts = {
+    {
+      elements = {
+        { id = 'scopes',      size = 0.25 },
+        { id = 'breakpoints', size = 0.25 },
+        { id = 'stacks',      size = 0.25 },
+        { id = 'watches',     size = 0.25 },
+      },
+      size = 40,
+      position = 'left',
+    },
+    {
+      elements = {
+        { id = 'repl',    size = 0.5 },
+        { id = 'console', size = 0.5 },
+      },
+      size = 10,
+      position = 'bottom',
+    },
+  },
+  floating = {
+    max_height = nil,
+    max_width = nil,
+    border = 'single',
+    mappings = {
+      close = { 'q', '<Esc>' },
+    },
+  },
+  controls = {
+    enabled = true,
+    element = 'repl',
+    icons = {
+      pause = '⏸',
+      play = '▶',
+      step_into = '⏎',
+      step_over = '⏭',
+      step_out = '⏮',
+      step_back = 'b',
+      run_last = '▶▶',
+      terminate = '⏹',
+      disconnect = '⏏',
+    },
+  },
+  render = {
+    max_type_length = nil,
+    max_value_lines = 100,
+  },
+})
+
+-- 自动打开/关闭 DAP UI
+dap.listeners.after.event_initialized['dapui_config'] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated['dapui_config'] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited['dapui_config'] = function()
+  dapui.close()
+end
+
+-- Mason-nvim-dap 配置（类似 mason-lspconfig）
+require('mason-nvim-dap').setup({
+  ensure_installed = {},
+  automatic_installation = true,
+  handlers = {
+    function(config)
+      -- 所有 adapter 的默认配置
+      require('mason-nvim-dap').default_setup(config)
+    end,
+  },
+})
+
+-- DAP 虚拟文本显示变量值
+vim.fn.sign_define('DapBreakpoint',          { text = '🔴', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpointCondition', { text = '🟡', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapLogPoint',            { text = '📝', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapStopped',             { text = '▶️', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpointRejected',  { text = '❌', texthl = '', linehl = '', numhl = '' })
+
+-- DAP 快捷键
+vim.keymap.set('n', '<F5>',  function() dap.continue() end,          { desc = 'DAP: Continue/Start' })
+vim.keymap.set('n', '<F6>',  function() dap.pause() end,             { desc = 'DAP: Pause' })
+vim.keymap.set('n', '<F9>',  function() dap.toggle_breakpoint() end, { desc = 'DAP: Toggle Breakpoint' })
+vim.keymap.set('n', '<F10>', function() dap.step_over() end,         { desc = 'DAP: Step Over' })
+vim.keymap.set('n', '<F11>', function() dap.step_into() end,         { desc = 'DAP: Step Into' })
+vim.keymap.set('n', '<F12>', function() dap.step_out() end,          { desc = 'DAP: Step Out' })
+vim.keymap.set('n', '<leader>dr', function() dap.repl.toggle() end,  { desc = 'DAP: Toggle REPL' })
+vim.keymap.set('n', '<leader>dh', function()
+  dap.ui.widgets.hover()
+end, { desc = 'DAP: Hover Variable' })
+vim.keymap.set('n', '<leader>dp', function()
+  dap.ui.widgets.preview()
+end, { desc = 'DAP: Preview Variable' })
+vim.keymap.set('n', '<leader>df', function()
+  local widgets = require('dap.ui.widgets')
+  widgets.centered_float(widgets.frames)
+end, { desc = 'DAP: Show Frames' })
+vim.keymap.set('n', '<leader>ds', function()
+  local widgets = require('dap.ui.widgets')
+  widgets.centered_float(widgets.scopes)
+end, { desc = 'DAP: Show Scopes' })
+vim.keymap.set('n', '<leader>du', function() dapui.toggle() end, { desc = 'DAP: Toggle UI' })
+vim.keymap.set('n', '<leader>dq', function()
+  dap.close()
+  dapui.close()
+end, { desc = 'DAP: Quit Debugging' })
