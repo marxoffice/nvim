@@ -283,8 +283,8 @@ require("lazy").setup({
 
   -- DAP (Debug Adapter Protocol)
   { 'mfussenegger/nvim-dap' },
-  { 'rcarriga/nvim-dap-ui',          dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
-  { 'jay-babu/mason-nvim-dap.nvim',  dependencies = { 'williamboman/mason.nvim', 'mfussenegger/nvim-dap' } },
+  { 'rcarriga/nvim-dap-ui',                       dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
+  { 'jay-babu/mason-nvim-dap.nvim',               dependencies = { 'williamboman/mason.nvim', 'mfussenegger/nvim-dap' } },
 
   -- Autocomplete
   { 'hrsh7th/nvim-cmp' },
@@ -944,11 +944,11 @@ require('lualine').setup({
   },
   sections = {
     lualine_x = {
-    {
+      {
         require("noice").api.status.mode.get,
         cond = require("noice").api.status.mode.has,
-    }, "encoding", "fileformat", "filetype"
-},
+      }, "encoding", "fileformat", "filetype"
+    },
   }
 })
 
@@ -1193,7 +1193,7 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
     bufmap('n', 'grh', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- 网上很多会说使用K这个快捷键 事实上K是默认快捷键 Knowledge的意思 可以直接查看各种文档的 比如C语言printf 上面按K 就会看到文档 Python上面调用则会使用pydoc查看python文档的 因此这里用gr前缀来配置快捷键
     bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Goto definition')
     bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Goto declaration')
-    bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer')
+    bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer') -- 后续可以考虑上 conform.nvim 这玩意是专门的formater 有些lsp是不自带format的
     bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', 'Display diagnostic')
     bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', 'Goto previous diagnostic')
     bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', 'Goto next diagnostic')
@@ -1478,20 +1478,20 @@ require('mason-nvim-dap').setup({
 })
 
 -- DAP 虚拟文本显示变量值
-vim.fn.sign_define('DapBreakpoint',          { text = '🔴', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
 vim.fn.sign_define('DapBreakpointCondition', { text = '🟡', texthl = '', linehl = '', numhl = '' })
-vim.fn.sign_define('DapLogPoint',            { text = '📝', texthl = '', linehl = '', numhl = '' })
-vim.fn.sign_define('DapStopped',             { text = '▶️', texthl = '', linehl = '', numhl = '' })
-vim.fn.sign_define('DapBreakpointRejected',  { text = '❌', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapLogPoint', { text = '📝', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpointRejected', { text = '❌', texthl = '', linehl = '', numhl = '' })
 
 -- DAP 快捷键
-vim.keymap.set('n', '<F5>',  function() dap.continue() end,          { desc = 'DAP: Continue/Start' })
-vim.keymap.set('n', '<F6>',  function() dap.pause() end,             { desc = 'DAP: Pause' })
-vim.keymap.set('n', '<F9>',  function() dap.toggle_breakpoint() end, { desc = 'DAP: Toggle Breakpoint' })
-vim.keymap.set('n', '<F10>', function() dap.step_over() end,         { desc = 'DAP: Step Over' })
-vim.keymap.set('n', '<F11>', function() dap.step_into() end,         { desc = 'DAP: Step Into' })
-vim.keymap.set('n', '<F12>', function() dap.step_out() end,          { desc = 'DAP: Step Out' })
-vim.keymap.set('n', '<leader>dr', function() dap.repl.toggle() end,  { desc = 'DAP: Toggle REPL' })
+vim.keymap.set('n', '<F5>', function() dap.continue() end, { desc = 'DAP: Continue/Start' })
+vim.keymap.set('n', '<F6>', function() dap.pause() end, { desc = 'DAP: Pause' })
+vim.keymap.set('n', '<F9>', function() dap.toggle_breakpoint() end, { desc = 'DAP: Toggle Breakpoint' })
+vim.keymap.set('n', '<F10>', function() dap.step_over() end, { desc = 'DAP: Step Over' })
+vim.keymap.set('n', '<F11>', function() dap.step_into() end, { desc = 'DAP: Step Into' })
+vim.keymap.set('n', '<F12>', function() dap.step_out() end, { desc = 'DAP: Step Out' })
+vim.keymap.set('n', '<leader>dr', function() dap.repl.toggle() end, { desc = 'DAP: Toggle REPL' })
 vim.keymap.set('n', '<leader>dh', function()
   dap.ui.widgets.hover()
 end, { desc = 'DAP: Hover Variable' })
