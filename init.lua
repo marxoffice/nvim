@@ -301,8 +301,8 @@ require("lazy").setup({
   { 'skywind3000/asynctasks.vim' },
   { 'skywind3000/asyncrun.vim' },
 
-  -- treesitter
-  { 'nvim-treesitter/nvim-treesitter' },
+  -- treesitter (使用 master 分支，兼容 Neovim 0.11+)
+  { 'nvim-treesitter/nvim-treesitter', branch = 'master', build = ':TSUpdate' },
   { 'nvim-treesitter/nvim-treesitter-textobjects' },
 
   -- hlchunk
@@ -383,7 +383,113 @@ require("lazy").setup({
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
     }
-  }
+  },
+
+  -- markdown rendering
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    ft = { 'markdown' },
+    opts = {
+      heading = {
+        enabled = true,
+        sign = true,
+        position = 'overlay',
+        icons = { ' ', ' ', ' ', ' ', ' ', ' ' },
+        signs = { '󰫎 ' },
+        width = 'full',
+        left_pad = 0,
+        right_pad = 0,
+        min_width = 0,
+        border = true,
+        border_prefix = true,
+        above = '▄',
+        below = '▀',
+        backgrounds = {
+          'RenderMarkdownH1Bg',
+          'RenderMarkdownH2Bg',
+          'RenderMarkdownH3Bg',
+          'RenderMarkdownH4Bg',
+          'RenderMarkdownH5Bg',
+          'RenderMarkdownH6Bg',
+        },
+      },
+      code = {
+        enabled = true,
+        sign = true,
+        style = 'full',
+        position = 'left',
+        language_icon = true,
+        language_name = true,
+        border = 'hide',
+        width = 'full',
+        left_pad = 0,
+        right_pad = 0,
+        min_width = 0,
+      },
+      bullet = {
+        enabled = true,
+        icons = { '●', '○', '◆', '◇' },
+        left_pad = 0,
+        right_pad = 0,
+        highlight = 'RenderMarkdownBullet',
+      },
+      checkbox = {
+        enabled = true,
+        unchecked = {
+          icon = '󰄱 ',
+          highlight = 'RenderMarkdownUnchecked',
+        },
+        checked = {
+          icon = '󰱒 ',
+          highlight = 'RenderMarkdownChecked',
+        },
+        custom = {
+          todo = { raw = '[-]', rendered = '󰥔 ', highlight = 'RenderMarkdownTodo' },
+        },
+      },
+      quote = {
+        enabled = true,
+        icon = '▋',
+        repeat_linebreak = true,
+        highlight = 'RenderMarkdownQuote',
+      },
+      pipe_table = {
+        enabled = true,
+        preset = 'none',
+        style = 'full',
+        cell = 'padded',
+        border = {
+          '┌', '┬', '┐',
+          '├', '┼', '┤',
+          '└', '┴', '╼',
+          '─', '│',
+        },
+        alignment_indicator = '─',
+        head = 'RenderMarkdownTableHead',
+        row = 'RenderMarkdownTableRow',
+        filler = 'RenderMarkdownTableFill',
+      },
+      link = {
+        enabled = true,
+        image = '󰥶 ',
+        email = '󰀓 ',
+        hyperlink = '󰌹 ',
+        highlight = 'RenderMarkdownLink',
+        wiki = { icon = '󱗖 ', highlight = 'RenderMarkdownWikiLink' },
+        custom = {
+          web = { pattern = '^http[s]?://', icon = '󰖟 ', highlight = 'RenderMarkdownLink' },
+        },
+      },
+      callout = {
+        note = { raw = '[!NOTE]', rendered = '󰋽 Note', highlight = 'RenderMarkdownInfo' },
+        tip = { raw = '[!TIP]', rendered = '󰌶 Tip', highlight = 'RenderMarkdownSuccess' },
+        important = { raw = '[!IMPORTANT]', rendered = '󰅹 Important', highlight = 'RenderMarkdownHint' },
+        warning = { raw = '[!WARNING]', rendered = '󰀪 Warning', highlight = 'RenderMarkdownWarn' },
+        caution = { raw = '[!CAUTION]', rendered = '󰳦 Caution', highlight = 'RenderMarkdownError' },
+      },
+    },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  },
 
 })
 vim.keymap.set('n', '<leader>pr', '<cmd>Lazy restore<cr>', { desc = 'Restore Plugin from lock-file' })
@@ -1088,17 +1194,18 @@ cmp.setup({ -- cmp是补全的引擎，它可以介绍多种补全的资源，�
 
 
 ---
--- LSP config
+-- LSP config (Neovim 0.11+ 使用 vim.lsp.config 内置 API)
 ---
--- See :help lspconfig-global-defaults
-local lspconfig = require('lspconfig')
-local lsp_defaults = lspconfig.util.default_config
+-- See :help vim.lsp.config
 
-lsp_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lsp_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
+-- 设置默认 capabilities
+vim.lsp.config['*'] = {
+  capabilities = vim.tbl_deep_extend(
+    'force',
+    vim.lsp.protocol.make_client_capabilities(),
+    require('cmp_nvim_lsp').default_capabilities()
+  ),
+}
 
 ---
 -- Diagnostic customization
@@ -1190,7 +1297,7 @@ vim.api.nvim_create_autocmd('LspAttach', { -- lsp 启动之后的快捷键
     -- CTRL-S   - vim.lsp.buf.signature_help()      (Insert/Select 模式，原 gs)
 
     -- 以下为需要手动配置的快捷键（Neovim 未提供默认）
-    bufmap('n', 'grh', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- 网上很多会说使用K这个快捷键 事实上K是默认快捷键 Knowledge的意思 可以直接查看各种文档的 比如C语言printf 上面按K 就会看到文档 Python上面调用则会使用pydoc查看python文档的 因此这里用gr前缀来配置快捷键
+    bufmap('n', 'grh', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Toggle hover doc') -- 网上很多建议将这个功能配置成K快捷键 这里做一个统一的解释 K 是一个vim/nvim的默认按键(不是map配置出来的快捷键) 你可以通过 :help K 查看K是干啥的 我这里一句话解释就是keyword 他会调用keywordprg来查看当前单词是干嘛的 如果你没有配置keywordprg 那么他会调用:help! 查看一下当前单词 这个功能可以直接查看各种文档的 比如C语言printf 上面按K 就会看到文档 Python上面调用则会使用pydoc查看python文档的(因为neovim识别到当前文件是py类型 直接将keywordprg设置成了pydoc看文档功能) 注意: 0.11+的neovim默认lsp配置会在检查用户没配置K快捷键 并且检查到keywordprg为空或者默认值时 自动将K配置为vim.lsp.buf.hover 不过这里的配置也不必删除 因为也许有人是既需要原生的K这种的 又需要Hover的 因此配置一个gr前缀的系列快捷键可以作为保底
     bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Goto definition')
     bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Goto declaration')
     bufmap({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer') -- 后续可以考虑上 conform.nvim 这玩意是专门的formater 有些lsp是不自带format的
@@ -1234,10 +1341,17 @@ require('mason-lspconfig').setup({
 })
 
 
-lspconfig.clangd.setup({})
-lspconfig.lua_ls.setup({})
+-- 配置并启用 LSP servers (Neovim 0.11+ 内置 API)
+-- See :help vim.lsp.config
+-- See :help vim.lsp.enable
 
-lspconfig.pylsp.setup({
+vim.lsp.config.clangd = {}
+vim.lsp.enable('clangd')
+
+vim.lsp.config.lua_ls = {}
+vim.lsp.enable('lua_ls')
+
+vim.lsp.config.pylsp = {
   settings = {
     pylsp = {
       plugins = {
@@ -1248,7 +1362,8 @@ lspconfig.pylsp.setup({
       }
     }
   }
-})
+}
+vim.lsp.enable('pylsp')
 
 
 ---
@@ -1264,54 +1379,39 @@ vim.keymap.set('n', '<leader>cL', '<cmd>lclose<cr>', { desc = 'Close Location Li
 vim.keymap.set('n', '<leader>ca', '<cmd>wqa<cr>', { desc = 'Close Neovim and Save all files' })
 vim.keymap.set('n', '<leader>cb', '<cmd>Bdelete<CR>', { desc = 'Close buffer' })
 
-if is_linux then
-  ---
-  -- Treesitter
-  ---
-  -- See :help nvim-treesitter-modules
-  require('nvim-treesitter.configs').setup({
-    highlight = {
+---
+-- Treesitter
+---
+-- See :help nvim-treesitter-modules
+require('nvim-treesitter.configs').setup({
+  highlight = {
+    enable = true,
+  },
+  -- :help nvim-treesitter-textobjects-modules
+  textobjects = {
+    select = {
       enable = true,
+      lookahead = true,
+      keymaps = {
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+      }
     },
-    -- :help nvim-treesitter-textobjects-modules
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true,
-        keymaps = {
-          ['af'] = '@function.outer',
-          ['if'] = '@function.inner',
-          ['ac'] = '@class.outer',
-          ['ic'] = '@class.inner',
-        }
-      },
-    },
-    ensure_installed = {
-      'lua',
-      'vim',
-      'vimdoc',
-      'json',
-      'c',
-      'cpp',
-      'python',
-    },
-  })
-end
-
-if is_windows then
-  require('nvim-treesitter.configs').setup({
-    ensure_installed = {
-      'lua',
-      'vim',
-      'vimdoc',
-      'json',
-      'c',
-      'cpp',
-      'python',
-    },
-  })
-end
-
+  },
+  ensure_installed = {
+    'lua',
+    'vim',
+    'vimdoc',
+    'json',
+    'c',
+    'cpp',
+    'python',
+    'markdown',
+    'markdown_inline',
+  },
+})
 
 
 ---
@@ -1511,3 +1611,167 @@ vim.keymap.set('n', '<leader>dq', function()
   dap.close()
   dapui.close()
 end, { desc = 'DAP: Quit Debugging' })
+
+
+-- ========================================================================== --
+-- ==                         MERMAID PREVIEW                               == --
+-- ========================================================================== --
+
+-- Check if mermaid-ascii is available
+-- install: go install github.com/AlexanderGrooff/mermaid-ascii@latest
+local function mermaid_ascii_available()
+  return vim.fn.executable('mermaid-ascii') == 1
+end
+
+if mermaid_ascii_available() then
+  -- Extract mermaid code block at cursor position
+  local function get_mermaid_block()
+    local buf = vim.api.nvim_get_current_buf()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    row = row - 1 -- Convert to 0-indexed
+
+    -- Find the start of the code block (```mermaid)
+    local start_row = nil
+    for i = row, 0, -1 do
+      local line = vim.api.nvim_buf_get_lines(buf, i, i + 1, false)[1]
+      if line:match('^```%s*mermaid%s*$') then
+        start_row = i
+        break
+      end
+      -- If we hit another code block, stop searching
+      if line:match('^```%s*%w+') and i ~= row then
+        break
+      end
+    end
+
+    if not start_row then
+      return nil
+    end
+
+    -- Find the end of the code block (```)
+    local end_row = nil
+    for i = start_row + 1, vim.api.nvim_buf_line_count(buf) - 1 do
+      local line = vim.api.nvim_buf_get_lines(buf, i, i + 1, false)[1]
+      if line:match('^```%s*$') then
+        end_row = i
+        break
+      end
+    end
+
+    if not end_row then
+      return nil
+    end
+
+    -- Extract the content
+    local lines = vim.api.nvim_buf_get_lines(buf, start_row + 1, end_row, false)
+    return table.concat(lines, '\n')
+  end
+
+  -- Create floating window
+  local function show_mermaid_preview(content)
+    if not content or content == '' then
+      vim.notify('Empty mermaid content', vim.log.levels.WARN)
+      return
+    end
+
+    -- Run mermaid-ascii
+    local result = vim.fn.system({'mermaid-ascii', '-f', '-'}, content)
+
+    if vim.v.shell_error ~= 0 then
+      vim.notify('mermaid-ascii error: ' .. result, vim.log.levels.ERROR)
+      return
+    end
+
+    -- Create scratch buffer
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(result, '\n'))
+    vim.bo[buf].filetype = 'mermaid_preview'
+    vim.bo[buf].modifiable = false
+
+    -- Calculate window size
+    local lines = vim.split(result, '\n')
+    local width = 0
+    for _, line in ipairs(lines) do
+      width = math.max(width, #line)
+    end
+    width = math.min(width + 2, vim.o.columns - 4)
+    local height = math.min(#lines + 2, vim.o.lines - 4)
+
+    -- Create floating window
+    local opts = {
+      relative = 'editor',
+      width = width,
+      height = height,
+      row = (vim.o.lines - height) / 2,
+      col = (vim.o.columns - width) / 2,
+      style = 'minimal',
+      border = 'rounded',
+      title = ' Mermaid Preview ',
+      title_pos = 'center',
+    }
+
+    local win = vim.api.nvim_open_win(buf, true, opts)
+    vim.wo[win].wrap = true
+    vim.wo[win].cursorline = true
+
+    -- Press q to close
+    vim.keymap.set('n', 'q', function()
+      vim.api.nvim_win_close(win, true)
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end, { buffer = buf, nowait = true })
+
+    -- Press Esc to close
+    vim.keymap.set('n', '<Esc>', function()
+      vim.api.nvim_win_close(win, true)
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end, { buffer = buf, nowait = true })
+  end
+
+  -- Preview mermaid diagram under cursor
+  local function preview_mermaid()
+    local content = get_mermaid_block()
+    if not content then
+      vim.notify('No mermaid code block found at cursor position', vim.log.levels.WARN)
+      return
+    end
+    show_mermaid_preview(content)
+  end
+
+  -- Preview all mermaid diagrams in current buffer
+  local function preview_all_mermaid()
+    local buf = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    local content = table.concat(lines, '\n')
+
+    -- Extract all mermaid blocks
+    local mermaid_blocks = {}
+    for block in content:gmatch('```mermaid%s*\n(.-)```') do
+      table.insert(mermaid_blocks, block)
+    end
+
+    if #mermaid_blocks == 0 then
+      vim.notify('No mermaid code blocks found in buffer', vim.log.levels.WARN)
+      return
+    end
+
+    -- Combine all blocks with separator
+    local combined = table.concat(mermaid_blocks, '\n\n---\n\n')
+    show_mermaid_preview(combined)
+  end
+
+  -- Set keymaps for markdown files
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'markdown',
+    group = group,
+    desc = 'Mermaid preview keymaps',
+    callback = function()
+      vim.keymap.set('n', '<leader>mp', preview_mermaid, { buffer = true, desc = 'Preview Mermaid diagram' })
+      vim.keymap.set('n', '<leader>mP', preview_all_mermaid, { buffer = true, desc = 'Preview all Mermaid diagrams' })
+    end,
+  })
+
+  -- Also add which-key entries
+  wk.add({
+    { '<leader>m', group = 'mermaid' },
+  })
+end
