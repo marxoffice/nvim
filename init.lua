@@ -261,14 +261,14 @@ require("lazy").setup({
   },
 
   -- theme
-  { "folke/tokyonight.nvim",                      priority = 1000 },
-  { "ellisonleao/gruvbox.nvim",                   priority = 1000 },
+  { "folke/tokyonight.nvim",               priority = 1000 },
+  { "ellisonleao/gruvbox.nvim",            priority = 1000 },
 
   -- dashboard: alpha
   { "goolord/alpha-nvim" },
 
   -- indent blank visual
-  { 'lukas-reineke/indent-blankline.nvim',        main = 'ibl' },
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl' },
 
   -- below status line
   { 'nvim-lualine/lualine.nvim' },
@@ -283,26 +283,44 @@ require("lazy").setup({
 
   -- DAP (Debug Adapter Protocol)
   { 'mfussenegger/nvim-dap' },
-  { 'rcarriga/nvim-dap-ui',                       dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
-  { 'jay-babu/mason-nvim-dap.nvim',               dependencies = { 'williamboman/mason.nvim', 'mfussenegger/nvim-dap' } },
+  { 'rcarriga/nvim-dap-ui',                dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
+  { 'jay-babu/mason-nvim-dap.nvim',        dependencies = { 'williamboman/mason.nvim', 'mfussenegger/nvim-dap' } },
 
-  -- Autocomplete
-  { 'hrsh7th/nvim-cmp' },
-  { 'hrsh7th/cmp-buffer' },
-  { 'hrsh7th/cmp-path' },
-  { 'saadparwaiz1/cmp_luasnip' },
-  { 'hrsh7th/cmp-nvim-lsp' },
+  -- Autocomplete (blink.cmp - batteries included)
+  -- 快捷键 (preset = 'default'):
+  --   C-n/C-p 或 ↑/↓  - 选择下一个/上一个补全项
+  --   C-y              - 确认选中项
+  --   C-e              - 关闭补全菜单
+  --   C-Space          - 打开补全菜单或切换文档显示
+  --   C-k              - 切换签名帮助 (需启用 signature.enabled)
+  --   C-u/C-d          - 滚动文档窗口（blink 内置支持）
+  {
+    'saghen/blink.cmp',
+    dependencies = { 'rafamadriz/friendly-snippets' },
+    version = '1.*',
+    opts = {
+      keymap = { preset = 'default' },
+      appearance = { nerd_font_variant = 'mono' },
+      completion = {
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+      },
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+      },
+      snippets = { preset = 'luasnip' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
+    },
+  },
 
-  -- Snippets
+  -- Snippet engine (required by blink.cmp)
   { 'L3MON4D3/LuaSnip' },
-  { 'rafamadriz/friendly-snippets' },
 
   -- asynctasks
   { 'skywind3000/asynctasks.vim' },
   { 'skywind3000/asyncrun.vim' },
 
   -- treesitter (使用 master 分支，兼容 Neovim 0.11+)
-  { 'nvim-treesitter/nvim-treesitter', branch = 'master', build = ':TSUpdate' },
+  { 'nvim-treesitter/nvim-treesitter',            branch = 'master', build = ':TSUpdate' },
   { 'nvim-treesitter/nvim-treesitter-textobjects' },
 
   -- hlchunk
@@ -461,8 +479,8 @@ require("lazy").setup({
         border = {
           '┌', '┬', '┐',
           '├', '┼', '┤',
-          '└', '┴', '╼',
-          '─', '│',
+          '└', '┴', '┘',
+          '│', '─',
         },
         alignment_indicator = '─',
         head = 'RenderMarkdownTableHead',
@@ -1098,99 +1116,21 @@ require('luasnip.loaders.from_vscode').lazy_load() -- 导入vscode的代码片�
 
 
 ---
--- nvim-cmp (autocomplete)
+-- LuaSnip 跳转快捷键
 ---
-vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
+-- 在代码片段中跳转到下一个/上一个占位符
+-- 例如: for ($1; $2; $3) { $0 }
+--   按 C-f 跳到下一个占位符 ($1 → $2 → $3 → $0)
+--   按 C-b 跳回上一个占位符
+vim.keymap.set({ 'i', 's' }, '<C-f>', function()
+  local ls = require('luasnip')
+  if ls.jumpable(1) then ls.jump(1) end
+end, { desc = 'LuaSnip: Jump forward' })
 
-local cmp = require('cmp')
-local luasnip = require('luasnip')
-
-local select_opts = { behavior = cmp.SelectBehavior.Select }
-
--- See :help cmp-config
-cmp.setup({ -- cmp是补全的引擎，它可以介绍多种补全的资源，例如lsp，正则表达式，文件，buffer等等
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end
-  },
-  sources = {
-    { name = 'path' },                        -- 允许文件路径作为代码提示 例如你写代码 open("./")这时候就会提示各种文件
-    { name = 'nvim_lsp' },                    -- 允许lsp提示
-    { name = 'buffer',  keyword_length = 3 }, -- 允许buffer作为提示
-    { name = 'luasnip', keyword_length = 2 }, -- 允许代码片段作为提示 比如之前安装的vscode片段
-  },
-  window = {                                  -- 窗口设置边框
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
-  formatting = { -- 一个设置
-    fields = { 'menu', 'abbr', 'kind' },
-    format = function(entry, item)
-      local menu_icon = { -- 这里的是在你按下Tab补全时，用各种标志区分补全来自哪个资源
-        nvim_lsp = 'λ',
-        luasnip = '⋗',
-        buffer = 'Ω',
-        path = '🖫',
-      }
-
-      item.menu = menu_icon[entry.source.name]
-      return item
-    end,
-  },
-  -- See :help cmp-mapping
-  mapping = {                                             -- 快捷键设置
-    ['<Up>'] = cmp.mapping.select_prev_item(select_opts), -- 用上下选择哪个补全
-    ['<Down>'] = cmp.mapping.select_next_item(select_opts),
-
-    ['<C-p>'] = cmp.mapping.select_prev_item(select_opts), -- 同上
-    ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
-
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),            -- 滑动文档，用idea的时候，可以看到一个函数的
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),             -- 文档 这两个快捷键可以滑动那个小窗口
-
-    ['<C-e>'] = cmp.mapping.abort(),                    -- 取消
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- 确认
-    ['<CR>'] = cmp.mapping.confirm({ select = false }), -- 回车表示 确认 很符合使用习惯
-
-    ['<C-f>'] = cmp.mapping(function(fallback)          -- 在代码段中向后跳转
-      if luasnip.jumpable(1) then                       -- 很多代码段是不只一个参数的
-        luasnip.jump(1)                                 -- 例如 for($1 i = 0; i < $2; i$3)
-      else                                              -- 按这个就可以从$1往后面跳，方便你修改
-        fallback()
-      end
-    end, { 'i', 's' }),
-
-    ['<C-b>'] = cmp.mapping(function(fallback) -- 同上 向前跳转
-      if luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-
-
-    ['<Tab>'] = cmp.mapping(function(fallback) -- 补全快捷键
-      local col = vim.fn.col('.') - 1
-
-      if cmp.visible() then
-        cmp.select_next_item(select_opts)
-      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-        fallback()
-      else
-        cmp.complete()
-      end
-    end, { 'i', 's' }),
-
-    ['<S-Tab>'] = cmp.mapping(function(fallback) -- 同上
-      if cmp.visible() then
-        cmp.select_prev_item(select_opts)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-})
+vim.keymap.set({ 'i', 's' }, '<C-b>', function()
+  local ls = require('luasnip')
+  if ls.jumpable(-1) then ls.jump(-1) end
+end, { desc = 'LuaSnip: Jump backward' })
 
 
 ---
@@ -1198,13 +1138,9 @@ cmp.setup({ -- cmp是补全的引擎，它可以介绍多种补全的资源，�
 ---
 -- See :help vim.lsp.config
 
--- 设置默认 capabilities
+-- 设置默认 capabilities (blink.cmp)
 vim.lsp.config['*'] = {
-  capabilities = vim.tbl_deep_extend(
-    'force',
-    vim.lsp.protocol.make_client_capabilities(),
-    require('cmp_nvim_lsp').default_capabilities()
-  ),
+  capabilities = require('blink.cmp').get_lsp_capabilities(),
 }
 
 ---
@@ -1450,11 +1386,10 @@ wk.add({
 -- See :help noice
 require("noice").setup({
   lsp = {
-    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    -- override markdown rendering so that **blink.cmp** and other plugins use **Treesitter**
     override = {
       ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
       ["vim.lsp.util.stylize_markdown"] = true,
-      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
     },
   },
   -- you can enable a preset for easier configuration
@@ -1675,7 +1610,7 @@ if mermaid_ascii_available() then
     end
 
     -- Run mermaid-ascii
-    local result = vim.fn.system({'mermaid-ascii', '-f', '-'}, content)
+    local result = vim.fn.system({ 'mermaid-ascii', '-f', '-' }, content)
 
     if vim.v.shell_error ~= 0 then
       vim.notify('mermaid-ascii error: ' .. result, vim.log.levels.ERROR)
