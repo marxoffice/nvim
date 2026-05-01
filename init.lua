@@ -17,6 +17,24 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.whichwrap:append("<,>,[,]")
 
+-- 项目级配置 (Neovim 内置功能)
+-- 启用后，打开文件时会自动加载项目目录下的 .nvim.lua
+-- 例如: /path/to/project/.nvim.lua
+--
+-- 使用方法:
+--   1. 在项目根目录创建 .nvim.lua 文件
+--   2. 在文件中写入项目特定的配置，如:
+--        -- 覆盖 LSP 设置
+--        vim.lsp.config.pylsp = {
+--          settings = { pylsp = { plugins = { pycodestyle = { ignore = {'E501'} } } } }
+--        }
+--        -- 项目快捷键
+--        vim.keymap.set('n', '<leader>r', ':AsyncRun python %<CR>')
+--   3. 首次打开该项目会提示是否信任，选择信任后生效
+--
+-- 注意: .nvim.lua 会覆盖全局配置，谨慎处理敏感项目
+vim.opt.exrc = true
+
 -- use nvim tree
 -- vim.g.netrw_banner = 0
 -- vim.g.netrw_winsize = 25
