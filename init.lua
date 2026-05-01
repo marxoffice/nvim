@@ -46,6 +46,27 @@ local is_mac = os_name == "Darwin"
 local is_linux = os_name == "Linux"
 local is_windows = os_name == "Windows_NT"
 
+
+-- 智能选择 shell
+-- Windows: 优先 pwsh (PowerShell Core)，回退 cmd
+-- Linux/Mac: 优先 zsh，回退 bash 都没有则使用系统默认
+if is_windows then
+  if vim.fn.executable("pwsh") == 1 then
+    vim.o.shell = "pwsh"
+    vim.o.shellcmdflag = "-NoLogo -NoProfile -Ex RemoteSigned -Command"
+    vim.o.shellquote = ""
+    vim.o.shellxquote = ""
+    vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s"
+    vim.o.shellredir = "2>&1 | Out-File -Encoding UTF8 %s"
+  else
+    vim.o.shell = "cmd.exe"
+  end
+elseif vim.fn.executable("zsh") == 1 then
+  vim.o.shell = "zsh"
+elseif vim.fn.executable("bash") == 1 then
+  vim.o.shell = "bash"
+end
+
 -- ========================================================================== --
 -- ==                             KEYBINDINGS                              == --
 -- ========================================================================== --
