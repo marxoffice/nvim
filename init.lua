@@ -84,10 +84,13 @@ vim.keymap.set({ 'n', 'x', 'o' }, '<leader>l', 'g_', { desc = 'Goto Current Line
 vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' }) -- By default, Ctrl + a is increment number under Ctrl + x is decrement
 -- 文件路径复制 (复制到系统剪贴板)
 vim.keymap.set('n', '<leader>yp', function() vim.fn.setreg('+', vim.fn.expand('%:p')) end, { desc = 'Copy file path' })
-vim.keymap.set('n', '<leader>yd', function() vim.fn.setreg('+', vim.fn.expand('%:p:h')) end, { desc = 'Copy file directory' })
+vim.keymap.set('n', '<leader>yd', function() vim.fn.setreg('+', vim.fn.expand('%:p:h')) end,
+  { desc = 'Copy file directory' })
 vim.keymap.set('n', '<leader>yf', function() vim.fn.setreg('+', vim.fn.expand('%:t')) end, { desc = 'Copy filename' })
-vim.keymap.set('n', '<leader>yr', function() vim.fn.setreg('+', vim.fn.expand('%:.')) end, { desc = 'Copy relative path' })
-vim.keymap.set('n', '<leader>yl', function() vim.fn.setreg('+', vim.fn.expand('%:p') .. ':' .. vim.fn.line('.')) end, { desc = 'Copy path:line' })
+vim.keymap.set('n', '<leader>yr', function() vim.fn.setreg('+', vim.fn.expand('%:.')) end,
+  { desc = 'Copy relative path' })
+vim.keymap.set('n', '<leader>yl', function() vim.fn.setreg('+', vim.fn.expand('%:p') .. ':' .. vim.fn.line('.')) end,
+  { desc = 'Copy path:line' })
 
 -- Git 信息复制
 vim.keymap.set('n', '<leader>yg', function()
@@ -104,6 +107,14 @@ vim.keymap.set('n', '<leader>yc', function()
   local hash = vim.fn.system('git rev-parse HEAD 2>/dev/null'):gsub('\n', '')
   if hash ~= '' then vim.fn.setreg('+', hash) end
 end, { desc = 'Copy git commit hash' })
+
+vim.keymap.set('n', '<leader>gs', ':!git stash', { desc = 'git stash' })
+vim.keymap.set('n', '<leader>ga', ':!git add --all', { desc = 'git add all files' })
+vim.keymap.set('n', '<leader>gr', ':!git reset --soft HEAD^', { desc = 'git reset soft to' })
+vim.keymap.set('n', '<leader>gc', ':!git commit -m', { desc = 'git commit' })
+vim.keymap.set('n', '<leader>gC', ':!git checkout', { desc = 'git checkout' })
+vim.keymap.set('n', '<leader>gp', ':!git pull --rebase', { desc = 'git pull' })
+vim.keymap.set('n', '<leader>gP', ':!git push', { desc = 'git push' })
 
 -- Basic clipboard interaction
 vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- copy
@@ -240,9 +251,9 @@ require("lazy").setup({
       "nvim-tree/nvim-web-devicons",
     },
     keys = {
-      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle file explorer" },
-      { "<leader>E", "<cmd>Neotree reveal<cr>", desc = "Reveal current file" },
-      { "<leader>be", "<cmd>Neotree buffers<cr>", desc = "Buffer explorer" },
+      { "<leader>e",  "<cmd>Neotree toggle<cr>",     desc = "Toggle file explorer" },
+      { "<leader>E",  "<cmd>Neotree reveal<cr>",     desc = "Reveal current file" },
+      { "<leader>be", "<cmd>Neotree buffers<cr>",    desc = "Buffer explorer" },
       { "<leader>ge", "<cmd>Neotree git_status<cr>", desc = "Git status explorer" },
     },
     opts = {
@@ -1415,6 +1426,7 @@ wk.add({
   { "<leader>c", group = "close" },
   { "<leader>d", group = "debug (DAP)" },
   { "<leader>f", group = "telescope find" },
+  { "<leader>g", group = "git commands" },
   { "<leader>p", group = "plugin" },
   { "<leader>s", group = "session" },
   { "<leader>t", group = "translate" },
