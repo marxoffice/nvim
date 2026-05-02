@@ -82,7 +82,28 @@ vim.keymap.set({ 'n', 'x', 'o' }, '<leader>U', ':source $MYVIMRC<cr>', { desc = 
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>h', '^', { desc = 'Goto Current Line Left' })
 vim.keymap.set({ 'n', 'x', 'o' }, '<leader>l', 'g_', { desc = 'Goto Current Line Right' })
 vim.keymap.set('n', '<leader>a', ':keepjumps normal! ggVG<cr>', { desc = 'Select All' }) -- By default, Ctrl + a is increment number under Ctrl + x is decrement
-vim.keymap.set('n', '<leader>yp', ":let @+=expand('%:p:h')<cr>", { desc = 'Copy the path of CurrentFile' })
+-- 文件路径复制 (复制到系统剪贴板)
+vim.keymap.set('n', '<leader>yp', function() vim.fn.setreg('+', vim.fn.expand('%:p')) end, { desc = 'Copy file path' })
+vim.keymap.set('n', '<leader>yd', function() vim.fn.setreg('+', vim.fn.expand('%:p:h')) end, { desc = 'Copy file directory' })
+vim.keymap.set('n', '<leader>yf', function() vim.fn.setreg('+', vim.fn.expand('%:t')) end, { desc = 'Copy filename' })
+vim.keymap.set('n', '<leader>yr', function() vim.fn.setreg('+', vim.fn.expand('%:.')) end, { desc = 'Copy relative path' })
+vim.keymap.set('n', '<leader>yl', function() vim.fn.setreg('+', vim.fn.expand('%:p') .. ':' .. vim.fn.line('.')) end, { desc = 'Copy path:line' })
+
+-- Git 信息复制
+vim.keymap.set('n', '<leader>yg', function()
+  local url = vim.fn.system('git remote get-url origin 2>/dev/null'):gsub('\n', '')
+  if url ~= '' then vim.fn.setreg('+', url) end
+end, { desc = 'Copy git remote URL' })
+
+vim.keymap.set('n', '<leader>yb', function()
+  local branch = vim.fn.system('git branch --show-current 2>/dev/null'):gsub('\n', '')
+  if branch ~= '' then vim.fn.setreg('+', branch) end
+end, { desc = 'Copy git branch' })
+
+vim.keymap.set('n', '<leader>yc', function()
+  local hash = vim.fn.system('git rev-parse HEAD 2>/dev/null'):gsub('\n', '')
+  if hash ~= '' then vim.fn.setreg('+', hash) end
+end, { desc = 'Copy git commit hash' })
 
 -- Basic clipboard interaction
 vim.keymap.set({ 'n', 'x' }, 'gy', '"+y', { desc = 'Copy to System' })    -- copy
@@ -207,46 +228,30 @@ vim.opt.rtp:prepend(lazypath)
 
 
 require("lazy").setup({
-  -- file explorer tree
+  -- file explorer: neo-tree
+  -- 按查看所有快捷键: ?
+  -- 核心快捷键: / 模糊搜索 | H 隐藏文件 | P 预览 | a 新建 | d 删除 | r 重命名
   {
-    "nvim-tree/nvim-tree.lua",
-    lazy = true,
-    cmd = {
-      "NvimTreeToggle",
-      "NvimTreeOpen",
-      "NvimTreeFindFile",
-      "NvimTreeFindFileToggle",
-      "NvimTreeRefresh",
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons",
     },
-    config = function()
-      require('nvim-tree').setup({
-        hijack_cursor = false,
-        on_attach = function(bufnr)
-          local bufmap = function(lhs, rhs, desc)
-            vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
-          end
-
-          -- :help nvim-tree.api
-          local api = require('nvim-tree.api')
-
-          bufmap('gh', api.tree.toggle_hidden_filter, 'Toggle hidden files')
-          bufmap('o', api.node.open.edit, 'Expand folder or go to file')
-          bufmap('A', api.tree.expand_all, 'Expand all')
-          bufmap('H', api.node.navigate.parent_close, 'Hidden subtree, Close parent folder')
-          bufmap('C', api.tree.change_root_to_node, 'Change root to node')
-          bufmap('y', api.fs.copy.node, 'Copy')
-          bufmap('d', api.fs.cut, 'Cut')
-          bufmap('D', api.fs.remove, 'Delete')
-          bufmap('p', api.fs.paste, 'Paste')
-          bufmap('r', api.fs.rename, 'Rename')
-          bufmap('<Tab>', api.node.open.preview, 'Open Preview')
-          bufmap('.', api.node.run.cmd, 'Run Command')
-          bufmap('O', api.node.run.system, 'Run in System')
-        end
-      })
-    end
+    keys = {
+      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle file explorer" },
+      { "<leader>E", "<cmd>Neotree reveal<cr>", desc = "Reveal current file" },
+      { "<leader>be", "<cmd>Neotree buffers<cr>", desc = "Buffer explorer" },
+      { "<leader>ge", "<cmd>Neotree git_status<cr>", desc = "Git status explorer" },
+    },
+    opts = {
+      filesystem = {
+        follow_current_file = { enabled = true },
+        use_libuv_file_watcher = true,
+      },
+    },
   },
-  { "nvim-tree/nvim-web-devicons" },
 
   -- fuzz finder
   {
@@ -566,12 +571,14 @@ vim.cmd.colorscheme('tokyonight')
 
 
 ---
--- nvim-tree (File explorer)
+-- neo-tree (File explorer)
 ---
--- See :help nvim-tree-setup
-
-vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Open/Close NvimTree' })
-
+-- 快捷键在插件 keys 配置中定义
+-- 窗口内按 ? 查看所有快捷键 下面列几个比较常用的
+-- <leader>e  - 切换文件浏览器
+-- <leader>E  - 定位到当前文件
+-- <leader>be - Buffer 浏览器
+-- <leader>ge - Git 状态浏览器
 
 ---
 -- Telescope
